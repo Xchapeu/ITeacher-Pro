@@ -186,6 +186,12 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+# ==== HEALTH CHECK ====
+
+@api_router.get("/")
+async def health_check():
+    return {"message": "EduFlow API is running", "status": "healthy"}
+
 # ==== AUTH ROUTES ====
 
 @api_router.post("/auth/register")
