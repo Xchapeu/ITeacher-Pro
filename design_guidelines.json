@@ -1,0 +1,149 @@
+{
+  "identity": {
+    "name": "EduFlow",
+    "persona": "E1: The Anti-AI Designer",
+    "tone": "Modern, Approachable, Organized, Academic but Fresh",
+    "theme_mode": "light",
+    "archetype": "The Soft Utility (Archetype 3 + 4 Hybrid)"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Outfit, sans-serif",
+      "body": "Public Sans, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "headings": "font-semibold (600) or font-bold (700)",
+      "body": "font-normal (400) or font-medium (500)"
+    },
+    "sizes": {
+      "h1": "text-5xl md:text-6xl tracking-tight leading-none",
+      "h2": "text-3xl md:text-4xl tracking-tight",
+      "h3": "text-2xl font-semibold tracking-normal",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm font-medium tracking-wide uppercase text-muted-foreground"
+    },
+    "installation": "Import fonts via Google Fonts in index.css: @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&family=Public+Sans:wght@300;400;500;600&display=swap');"
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#0EA5E9",
+        "foreground": "#FFFFFF",
+        "50": "#F0F9FF",
+        "100": "#E0F2FE",
+        "200": "#BAE6FD",
+        "300": "#7DD3FC",
+        "400": "#38BDF8",
+        "500": "#0EA5E9",
+        "600": "#0284C7",
+        "700": "#0369A1",
+        "800": "#075985",
+        "900": "#0C4A6E"
+      },
+      "secondary": {
+        "DEFAULT": "#F1F5F9",
+        "foreground": "#0F172A"
+      },
+      "accent": {
+        "DEFAULT": "#F8FAFC",
+        "foreground": "#0F172A"
+      },
+      "background": "#FFFFFF",
+      "foreground": "#0F172A",
+      "muted": {
+        "DEFAULT": "#F1F5F9",
+        "foreground": "#64748B"
+      },
+      "card": {
+        "DEFAULT": "#FFFFFF",
+        "foreground": "#0F172A"
+      },
+      "border": "#E2E8F0",
+      "input": "#E2E8F0",
+      "ring": "#0EA5E9"
+    },
+    "usage_rules": {
+      "gradients": "Avoid full-screen gradients. Use subtle mesh gradients in hero sections only: 'bg-gradient-to-br from-sky-50 to-white'.",
+      "text_contrast": "Never use pure black (#000000). Use Slate-900 (#0F172A) for headings and Slate-600 (#475569) for body text.",
+      "status_colors": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "error": "#EF4444",
+        "info": "#3B82F6"
+      }
+    }
+  },
+  "layout": {
+    "spacing_system": {
+      "base": "Use 2x standard spacing. If you think p-4 is enough, use p-8.",
+      "container_padding": "px-6 md:px-12 lg:px-24",
+      "section_gap": "gap-12 md:gap-24"
+    },
+    "grid_strategies": {
+      "landing_page": "Mode A: The Tetris Grid. Asymmetrical layouts. Use col-span-full for hero, col-span-4 for features. Never equal 3-column grids.",
+      "dashboard": "Mode B: High Density Grid. grid-cols-12. Sidebar col-span-2, Main Content col-span-10. Widgets: col-span-3, col-span-6, col-span-4. Use h-full to stretch cards."
+    },
+    "containers": {
+      "card_style": "bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-200 rounded-xl",
+      "dashboard_card": "bg-white border border-slate-200 shadow-none rounded-lg p-6"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-8 py-6 font-semibold tracking-wide transition-transform active:scale-95",
+      "secondary": "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-full px-8 py-6 font-medium",
+      "ghost": "text-slate-600 hover:text-primary hover:bg-sky-50 rounded-lg px-4 py-2"
+    },
+    "inputs": {
+      "style": "bg-slate-50 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-lg h-12 px-4 text-base transition-all"
+    },
+    "cards": {
+      "landing": "group relative overflow-hidden bg-white border border-slate-100 rounded-2xl p-8 hover:border-primary/20 transition-colors",
+      "dashboard": "bg-white border border-slate-200 rounded-xl p-6 flex flex-col gap-4"
+    },
+    "navigation": {
+      "header": "sticky top-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60",
+      "sidebar": "fixed left-0 top-0 z-40 h-screen w-64 border-r border-slate-200 bg-slate-50/50 backdrop-blur-xl"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "Use 'backdrop-blur-xl bg-white/70 border border-white/20 shadow-sm' for floating elements like toasts or sticky headers.",
+    "noise_texture": "Add a subtle noise texture overlay to the body background at 2% opacity to reduce digital flatness.",
+    "micro_interactions": "All interactive elements must have 'active:scale-95' or 'hover:-translate-y-1' transitions.",
+    "shadows": "Use colored shadows for primary actions: 'shadow-[0_8px_30px_rgb(14,165,233,0.15)]'."
+  },
+  "media": {
+    "image_urls": {
+      "hero_bg": "https://images.unsplash.com/photo-1586144131462-fa2a2b6d070c?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "teacher_dashboard": "https://images.pexels.com/photos/5306480/pexels-photo-5306480.jpeg",
+      "students_learning": "https://images.pexels.com/photos/159775/library-la-trobe-study-students-159775.jpeg",
+      "students_outdoors": "https://images.pexels.com/photos/7972485/pexels-photo-7972485.jpeg",
+      "placeholder_avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+    },
+    "icons": "Use 'lucide-react' for all UI icons. Stroke width: 1.5px for a refined look."
+  },
+  "accessibility": {
+    "contrast": "Ensure text-slate-600 or darker on white backgrounds.",
+    "focus_states": "All interactive elements must have visible focus rings: 'focus-visible:ring-2 focus-visible:ring-primary'.",
+    "testing": "All interactive elements MUST include data-testid attributes (e.g., data-testid='login-submit-btn')."
+  },
+  "instructions_to_main_agent": [
+    "1. Install fonts in index.css immediately.",
+    "2. Configure tailwind.config.js with the provided color palette and border radius.",
+    "3. Create a 'Layout' component that handles the sidebar/header structure for dashboards.",
+    "4. Use the 'Tetris Grid' for the landing page - do not make it a simple list of sections.",
+    "5. Ensure all forms use 'react-hook-form' and 'zod' for validation (standard practice).",
+    "6. Use 'recharts' for dashboard charts (attendance, grades).",
+    "7. Implement the 'High Density Grid' for the dashboard - minimize whitespace between widgets, maximize data visibility.",
+    "8. DO NOT use gradients for text. Keep text solid Slate-900.",
+    "9. Use the provided image URLs for specific sections. Do not use placeholders."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop' - generic centered layouts.",
+    "Use 2-3x more spacing than typical.",
+    "Every interaction needs micro-animations.",
+    "Use sonner for toasts.",
+    "Components must use named exports."
+  ]
+}
