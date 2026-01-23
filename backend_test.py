@@ -143,6 +143,7 @@ class EduFlowAPITester:
             data={
                 "name": "Test Mathematics Class",
                 "description": "Advanced mathematics for grade 10",
+                "institution_id": self.institution_id,
                 "schedule": [
                     {"day": "Segunda", "time": "08:00", "duration": "60"},
                     {"day": "Quarta", "time": "10:00", "duration": "90"}
