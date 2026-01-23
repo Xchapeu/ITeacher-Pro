@@ -64,7 +64,7 @@ class ClassBase(BaseModel):
     schedule: List[dict] = []  # [{"day": "Monday", "time": "10:00", "duration": "60"}]
 
 class ClassCreate(ClassBase):
-    institution_id: str
+    pass
 
 class Class(ClassBase):
     class_id: str
