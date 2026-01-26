@@ -442,53 +442,116 @@ export const ClassDetails = () => {
                     Adicionar Horário
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-2xl">
                   <DialogHeader>
-                    <DialogTitle>Adicionar Horário</DialogTitle>
+                    <DialogTitle>Adicionar Horário de Aula</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleAddSchedule} className="space-y-4">
                     <div>
-                      <Label htmlFor="day">Dia da Semana</Label>
+                      <Label htmlFor="teacher">Professor</Label>
                       <select
-                        id="day"
-                        data-testid="schedule-day-select"
-                        value={scheduleForm.day}
-                        onChange={(e) => setScheduleForm({ ...scheduleForm, day: e.target.value })}
+                        id="teacher"
+                        data-testid="schedule-teacher-select"
+                        value={scheduleForm.teacher_id}
+                        onChange={(e) => handleTeacherChange(e.target.value)}
                         className="w-full h-12 bg-slate-50 border-slate-200 rounded-lg px-4"
+                        required
                       >
-                        {DAYS_OF_WEEK.map((day) => (
-                          <option key={day} value={day}>
-                            {day}
+                        <option value="">Selecione um professor</option>
+                        {teachers.map((teacher) => (
+                          <option key={teacher.teacher_id} value={teacher.teacher_id}>
+                            {teacher.teacher_name} - {teacher.subject_name}
                           </option>
                         ))}
                       </select>
                     </div>
-                    <div>
-                      <Label htmlFor="time">Horário</Label>
-                      <Input
-                        id="time"
-                        data-testid="schedule-time-input"
-                        type="time"
-                        value={scheduleForm.time}
-                        onChange={(e) => setScheduleForm({ ...scheduleForm, time: e.target.value })}
-                        required
-                      />
+                    {scheduleForm.teacher_id && (
+                      <div className="bg-sky-50 border border-sky-200 rounded-lg p-3">
+                        <p className="text-sm font-medium text-slate-700">
+                          Matéria: <span className="text-primary">{teachers.find(t => t.teacher_id === scheduleForm.teacher_id)?.subject_name}</span>
+                        </p>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="day_of_week">Dia da Semana</Label>
+                        <select
+                          id="day_of_week"
+                          data-testid="schedule-day-select"
+                          value={scheduleForm.day_of_week}
+                          onChange={(e) => setScheduleForm({ ...scheduleForm, day_of_week: e.target.value })}
+                          className="w-full h-12 bg-slate-50 border-slate-200 rounded-lg px-4"
+                        >
+                          {DAYS_OF_WEEK.map((day) => (
+                            <option key={day} value={day}>
+                              {day}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <Label htmlFor="time">Horário</Label>
+                        <Input
+                          id="time"
+                          data-testid="schedule-time-input"
+                          type="time"
+                          value={scheduleForm.time}
+                          onChange={(e) => setScheduleForm({ ...scheduleForm, time: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="duration">Duração (minutos)</Label>
+                        <Input
+                          id="duration"
+                          data-testid="schedule-duration-input"
+                          type="number"
+                          value={scheduleForm.duration}
+                          onChange={(e) => setScheduleForm({ ...scheduleForm, duration: parseInt(e.target.value) })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="start_date">Data de Início</Label>
+                        <Input
+                          id="start_date"
+                          data-testid="schedule-start-date-input"
+                          type="date"
+                          value={scheduleForm.start_date}
+                          onChange={(e) => setScheduleForm({ ...scheduleForm, start_date: e.target.value })}
+                          required
+                        />
+                      </div>
                     </div>
                     <div>
-                      <Label htmlFor="duration">Duração (minutos)</Label>
-                      <Input
-                        id="duration"
-                        data-testid="schedule-duration-input"
-                        type="number"
-                        value={scheduleForm.duration}
-                        onChange={(e) =>
-                          setScheduleForm({ ...scheduleForm, duration: e.target.value })
-                        }
-                        required
-                      />
+                      <Label htmlFor="recurrence">Recorrência</Label>
+                      <select
+                        id="recurrence"
+                        data-testid="schedule-recurrence-select"
+                        value={scheduleForm.recurrence_type}
+                        onChange={(e) => setScheduleForm({ ...scheduleForm, recurrence_type: e.target.value })}
+                        className="w-full h-12 bg-slate-50 border-slate-200 rounded-lg px-4"
+                      >
+                        <option value="once">Uma vez</option>
+                        <option value="weekly">Semanal (até fim do ano)</option>
+                        <option value="monthly">Mensal (até fim do ano)</option>
+                        <option value="semester_1">1º Semestre (Jan-Jun)</option>
+                        <option value="semester_2">2º Semestre (Jul-Dez)</option>
+                        <option value="annual">Anual</option>
+                      </select>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {scheduleForm.recurrence_type === 'once' && 'Aula única na data selecionada'}
+                        {scheduleForm.recurrence_type === 'weekly' && 'Toda semana no mesmo dia e horário'}
+                        {scheduleForm.recurrence_type === 'monthly' && 'Todo mês no mesmo dia e horário'}
+                        {scheduleForm.recurrence_type === 'semester_1' && 'Todas as semanas de Janeiro a Junho'}
+                        {scheduleForm.recurrence_type === 'semester_2' && 'Todas as semanas de Julho a Dezembro'}
+                        {scheduleForm.recurrence_type === 'annual' && 'Todas as semanas durante o ano todo'}
+                      </p>
                     </div>
                     <Button type="submit" className="w-full" data-testid="submit-schedule-btn">
-                      Adicionar
+                      Adicionar Horário
                     </Button>
                   </form>
                 </DialogContent>
