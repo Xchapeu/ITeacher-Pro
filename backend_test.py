@@ -175,10 +175,27 @@ class EduFlowAPITester:
         )
         return success, response
 
+    def test_create_subject(self):
+        """Test creating a subject"""
+        success, response = self.run_test(
+            "Create Subject",
+            "POST",
+            "subjects",
+            200,
+            data={
+                "name": "Mathematics",
+                "description": "Basic and advanced mathematics"
+            }
+        )
+        if success and 'subject_id' in response:
+            self.subject_id = response['subject_id']
+            print(f"   Subject ID: {self.subject_id}")
+        return success, response
+
     def test_assign_teacher(self):
         """Test assigning teacher to class"""
-        if not self.teacher_id or not self.class_id:
-            print("❌ Skipping - Need teacher_id and class_id")
+        if not self.teacher_id or not self.class_id or not hasattr(self, 'subject_id'):
+            print("❌ Skipping - Need teacher_id, class_id, and subject_id")
             return False, {}
         
         success, response = self.run_test(
@@ -188,6 +205,7 @@ class EduFlowAPITester:
             200,
             data={
                 "teacher_id": self.teacher_id,
+                "subject_id": self.subject_id,
                 "class_id": self.class_id
             }
         )
