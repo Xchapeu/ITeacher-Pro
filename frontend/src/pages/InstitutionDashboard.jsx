@@ -556,6 +556,7 @@ const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
 
   const handleAssignTeacher = async (e) => {
     e.preventDefault();
+    setShowAssignDialog(false); // Close dialog immediately
     try {
       await axios.post(
         `${BACKEND_URL}/api/teacher-assignments`,
@@ -567,7 +568,6 @@ const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
         getAuthHeaders()
       );
       toast.success('Professor atribuído à turma com sucesso!');
-      setShowAssignDialog(false);
       setSelectedTeacher('');
       setSelectedSubject('');
       setSelectedClass('');
