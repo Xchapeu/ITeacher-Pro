@@ -251,8 +251,8 @@ class EduFlowAPITester:
 
     def test_create_material(self):
         """Test creating material"""
-        if not self.class_id:
-            print("❌ Skipping - Need class_id")
+        if not self.class_id or not hasattr(self, 'subject_id'):
+            print("❌ Skipping - Need class_id and subject_id")
             return False, {}
         
         success, response = self.run_test(
@@ -264,7 +264,8 @@ class EduFlowAPITester:
                 "title": "Introduction to Algebra",
                 "description": "Basic algebraic concepts and operations",
                 "content": "This material covers variables, equations, and basic problem solving.",
-                "class_id": self.class_id
+                "class_id": self.class_id,
+                "subject_id": self.subject_id
             }
         )
         if success and 'material_id' in response:
