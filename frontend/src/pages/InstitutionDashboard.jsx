@@ -186,9 +186,10 @@ export const InstitutionDashboard = () => {
         {/* Main Content */}
         <main className="col-span-10 p-8">
           <Routes>
-            <Route path="/" element={<Overview classes={classes} teachers={teachers} user={user} />} />
+            <Route path="/" element={<Overview classes={classes} teachers={teachers} subjects={subjects} user={user} />} />
             <Route path="/classes" element={<ClassesView classes={classes} fetchData={fetchData} />} />
-            <Route path="/teachers" element={<TeachersView teachers={teachers} classes={classes} fetchData={fetchData} />} />
+            <Route path="/subjects" element={<SubjectsView subjects={subjects} fetchData={fetchData} />} />
+            <Route path="/teachers" element={<TeachersView teachers={teachers} classes={classes} subjects={subjects} fetchData={fetchData} />} />
             <Route path="/messages" element={<MessagesView messages={messages} teachers={teachers} fetchData={fetchData} />} />
           </Routes>
         </main>
