@@ -755,7 +755,7 @@ async def create_student(student_data: StudentCreate, current_user: dict = Depen
 
 @api_router.get("/students/class/{class_id}", response_model=List[Student])
 async def get_students_by_class(class_id: str, current_user: dict = Depends(get_current_user)):
-    students = await db.students.find({"class_id": class_id}, {"_id": 0}).to_list(1000)
+    students = await db.students.find({"class_id": class_id}, {"_id": 0}).sort("name", 1).to_list(1000)
     
     for s in students:
         if isinstance(s["created_at"], str):
