@@ -47,16 +47,18 @@ export const InstitutionDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [userRes, classesRes, teachersRes, messagesRes] = await Promise.all([
+      const [userRes, classesRes, teachersRes, subjectsRes, messagesRes] = await Promise.all([
         axios.get(`${BACKEND_URL}/api/auth/me`, getAuthHeaders()),
         axios.get(`${BACKEND_URL}/api/classes`, getAuthHeaders()),
         axios.get(`${BACKEND_URL}/api/teachers`, getAuthHeaders()),
+        axios.get(`${BACKEND_URL}/api/subjects`, getAuthHeaders()),
         axios.get(`${BACKEND_URL}/api/messages`, getAuthHeaders())
       ]);
 
       setUser(userRes.data);
       setClasses(classesRes.data);
       setTeachers(teachersRes.data);
+      setSubjects(subjectsRes.data);
       setMessages(messagesRes.data);
       setLoading(false);
     } catch (error) {
