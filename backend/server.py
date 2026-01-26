@@ -620,6 +620,7 @@ async def create_material(material_data: MaterialCreate, current_user: dict = De
         "file_url": material_data.file_url,
         "content": material_data.content,
         "class_id": material_data.class_id,
+        "subject_id": material_data.subject_id,
         "uploaded_by": current_user["user_id"],
         "created_at": datetime.now(timezone.utc).isoformat()
     }
@@ -633,17 +634,37 @@ async def create_material(material_data: MaterialCreate, current_user: dict = De
         file_url=material_data.file_url,
         content=material_data.content,
         class_id=material_data.class_id,
+        subject_id=material_data.subject_id,
         uploaded_by=current_user["user_id"],
         created_at=datetime.now(timezone.utc)
     )
 
-@api_router.get("/materials/class/{class_id}", response_model=List[Material])
-async def get_materials_by_class(class_id: str, current_user: dict = Depends(get_current_user)):
-    materials = await db.materials.find({"class_id": class_id}, {"_id": 0}).to_list(1000)
+@api_router.get("/materials/class/{class_id}")
+async def get_materials_by_class(class_id: str, subject_id: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+    query = {"class_id": class_id}
+    
+    # Teachers only see materials for their subjects
+    if current_user["user_type"] == "teacher":
+        assignments = await db.teacher_assignments.find({
+            "teacher_id": current_user["user_id"],
+            "class_id": class_id
+        }, {"_id": 0}).to_list(1000)
+        
+        teacher_subject_ids = [a["subject_id"] for a in assignments]
+        query["subject_id"] = {"$in": teacher_subject_ids}
+    
+    # Optional filter by specific subject
+    if subject_id:
+        query["subject_id"] = subject_id
+    
+    materials = await db.materials.find(query, {"_id": 0}).to_list(1000)
     
     for m in materials:
         if isinstance(m["created_at"], str):
             m["created_at"] = datetime.fromisoformat(m["created_at"])
+        # Add subject info
+        subject = await db.subjects.find_one({"subject_id": m["subject_id"]}, {"_id": 0})
+        m["subject"] = subject
     
     return materials
 
