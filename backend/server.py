@@ -355,7 +355,6 @@ async def create_class(class_data: ClassCreate, current_user: dict = Depends(get
         "class_id": class_id,
         "name": class_data.name,
         "description": class_data.description,
-        "schedule": class_data.schedule,
         "institution_id": current_user["user_id"],
         "created_at": datetime.now(timezone.utc).isoformat()
     }
@@ -366,7 +365,6 @@ async def create_class(class_data: ClassCreate, current_user: dict = Depends(get
         class_id=class_id,
         name=class_data.name,
         description=class_data.description,
-        schedule=class_data.schedule,
         institution_id=current_user["user_id"],
         created_at=datetime.now(timezone.utc)
     )
