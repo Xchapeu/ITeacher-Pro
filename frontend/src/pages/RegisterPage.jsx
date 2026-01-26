@@ -55,7 +55,7 @@ export const RegisterPage = () => {
           <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
             <BookOpen className="h-7 w-7 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-3xl font-heading font-bold text-slate-900">EduFlow</span>
+          <span className="text-3xl font-heading font-bold text-slate-900">ITeacher</span>
         </Link>
 
         <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-8 space-y-6">

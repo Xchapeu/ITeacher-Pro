@@ -12,7 +12,7 @@ export const LandingPage = () => {
             <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <BookOpen className="h-6 w-6 text-white" strokeWidth={2.5} />
             </div>
-            <span className="text-2xl font-heading font-bold text-slate-900">EduFlow</span>
+            <span className="text-2xl font-heading font-bold text-slate-900">ITeacher</span>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login">
@@ -163,7 +163,7 @@ export const LandingPage = () => {
       {/* Footer */}
       <footer className="px-6 md:px-12 lg:px-24 py-12 border-t border-slate-100">
         <div className="text-center text-slate-600">
-          <p>© 2025 EduFlow. Todos os direitos reservados.</p>
+          <p>© 2025 ITeacher. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

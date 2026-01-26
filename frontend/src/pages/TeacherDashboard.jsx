@@ -93,7 +93,7 @@ export const TeacherDashboard = () => {
             <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <BookOpen className="h-6 w-6 text-white" strokeWidth={2.5} />
             </div>
-            <span className="text-xl font-heading font-bold text-slate-900">EduFlow</span>
+            <span className="text-xl font-heading font-bold text-slate-900">ITeacher</span>
           </div>
 
           <nav className="space-y-2">
