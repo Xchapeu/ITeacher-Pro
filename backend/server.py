@@ -358,9 +358,17 @@ async def get_classes(current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] == "institution":
         classes = await db.classes.find({"institution_id": current_user["user_id"]}, {"_id": 0}).to_list(1000)
     else:
+        # Teachers only see classes they are assigned to
         assignments = await db.teacher_assignments.find({"teacher_id": current_user["user_id"]}, {"_id": 0}).to_list(1000)
-        class_ids = [a["class_id"] for a in assignments]
-        classes = await db.classes.find({"class_id": {"$in": class_ids}}, {"_id": 0}).to_list(1000)
+        class_ids = list(set([a["class_id"] for a in assignments]))
+        classes = await db.classes.find({"class_id": {"$in": class_ids}}, {"_id": 0}).to_list(1000) if class_ids else []
+        
+        # Add subject information to each class
+        for cls in classes:
+            cls_assignments = [a for a in assignments if a["class_id"] == cls["class_id"]]
+            subject_ids = [a["subject_id"] for a in cls_assignments]
+            subjects = await db.subjects.find({"subject_id": {"$in": subject_ids}}, {"_id": 0}).to_list(100)
+            cls["subjects"] = subjects
     
     for c in classes:
         if isinstance(c["created_at"], str):
