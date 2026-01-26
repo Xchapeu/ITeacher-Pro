@@ -400,6 +400,11 @@ def main():
     tester.test_get_classes()
     tester.test_get_teachers()
     
+    # Test 5.5: Subject Management
+    print("\n📚 Testing Subject Management...")
+    if not tester.test_create_subject()[0]:
+        print("❌ Subject creation failed")
+    
     # Test 6: Teacher Assignment
     print("\n👨‍🏫 Testing Teacher Assignment...")
     tester.test_assign_teacher()
