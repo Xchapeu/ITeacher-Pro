@@ -560,7 +560,7 @@ export const ClassDetails = () => {
 
             <div className="grid grid-cols-7 gap-4">
               {DAYS_OF_WEEK.map((day) => {
-                const daySchedules = (classData?.schedule || []).filter((s) => s.day === day);
+                const daySchedules = schedules.filter((s) => s.day_of_week === day);
                 return (
                   <Card key={day} className="border-slate-200" data-testid={`schedule-${day}`}>
                     <CardHeader>
@@ -568,16 +568,41 @@ export const ClassDetails = () => {
                     </CardHeader>
                     <CardContent>
                       {daySchedules.length > 0 ? (
-                        <div className="space-y-2">
-                          {daySchedules.map((schedule, idx) => (
+                        <div className="space-y-3">
+                          {daySchedules.map((schedule) => (
                             <div
-                              key={idx}
-                              className="bg-sky-50 border border-sky-200 rounded-lg p-3"
+                              key={schedule.schedule_id}
+                              className="bg-sky-50 border border-sky-200 rounded-lg p-3 relative group"
                             >
+                              <button
+                                onClick={() => handleDeleteSchedule(schedule.schedule_id)}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Excluir horário"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
                               <p className="text-sm font-semibold text-slate-900">
                                 {schedule.time}
                               </p>
                               <p className="text-xs text-slate-600">{schedule.duration} min</p>
+                              <div className="mt-2 pt-2 border-t border-sky-300">
+                                <p className="text-xs font-medium text-primary">
+                                  {schedule.teacher_name}
+                                </p>
+                                <p className="text-xs text-slate-600">
+                                  {schedule.subject_name}
+                                </p>
+                              </div>
+                              <div className="mt-1">
+                                <span className="inline-block text-xs bg-sky-200 text-sky-800 px-2 py-0.5 rounded-full">
+                                  {schedule.recurrence_type === 'once' && 'Única'}
+                                  {schedule.recurrence_type === 'weekly' && 'Semanal'}
+                                  {schedule.recurrence_type === 'monthly' && 'Mensal'}
+                                  {schedule.recurrence_type === 'semester_1' && '1º Sem'}
+                                  {schedule.recurrence_type === 'semester_2' && '2º Sem'}
+                                  {schedule.recurrence_type === 'annual' && 'Anual'}
+                                </span>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -590,10 +615,11 @@ export const ClassDetails = () => {
               })}
             </div>
 
-            {(!classData?.schedule || classData.schedule.length === 0) && (
+            {schedules.length === 0 && (
               <div className="text-center py-16">
                 <CalendarIcon className="h-16 w-16 text-slate-300 mx-auto mb-4" />
                 <p className="text-slate-600">Nenhum horário cadastrado ainda</p>
+                <p className="text-sm text-slate-500 mt-2">Clique em "Adicionar Horário" para começar</p>
               </div>
             )}
           </TabsContent>
