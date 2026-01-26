@@ -442,11 +442,20 @@ def calculate_end_date(start_date_str: str, recurrence_type: str) -> str:
     if recurrence_type == "once":
         return start_date_str
     elif recurrence_type == "weekly":
-        # Until end of year
-        end_date = datetime(start_date.year, 12, 31)
+        # Only for current week (7 days from start)
+        end_date = start_date + timedelta(days=6)
     elif recurrence_type == "monthly":
-        # Until end of year
-        end_date = datetime(start_date.year, 12, 31)
+        # Only for current month
+        last_day = 31
+        if start_date.month in [4, 6, 9, 11]:
+            last_day = 30
+        elif start_date.month == 2:
+            # Check for leap year
+            if start_date.year % 4 == 0 and (start_date.year % 100 != 0 or start_date.year % 400 == 0):
+                last_day = 29
+            else:
+                last_day = 28
+        end_date = datetime(start_date.year, start_date.month, last_day)
     elif recurrence_type == "semester_1":
         # January to June
         end_date = datetime(start_date.year, 6, 30)
