@@ -702,10 +702,10 @@ const MessagesView = ({ messages, teachers, fetchData }) => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    setShowDialog(false); // Close dialog immediately
     try {
       await axios.post(`${BACKEND_URL}/api/messages`, formData, getAuthHeaders());
       toast.success('Mensagem enviada!');
-      setShowDialog(false);
       setFormData({ recipient_id: '', content: '' });
       fetchData();
     } catch (error) {
