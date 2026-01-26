@@ -535,16 +535,16 @@ export const ClassDetails = () => {
                         className="w-full h-12 bg-slate-50 border-slate-200 rounded-lg px-4"
                       >
                         <option value="once">Uma vez</option>
-                        <option value="weekly">Semanal (até fim do ano)</option>
-                        <option value="monthly">Mensal (até fim do ano)</option>
+                        <option value="weekly">Semanal (semana corrente)</option>
+                        <option value="monthly">Mensal (mês corrente)</option>
                         <option value="semester_1">1º Semestre (Jan-Jun)</option>
                         <option value="semester_2">2º Semestre (Jul-Dez)</option>
                         <option value="annual">Anual</option>
                       </select>
                       <p className="text-xs text-slate-500 mt-1">
                         {scheduleForm.recurrence_type === 'once' && 'Aula única na data selecionada'}
-                        {scheduleForm.recurrence_type === 'weekly' && 'Toda semana no mesmo dia e horário'}
-                        {scheduleForm.recurrence_type === 'monthly' && 'Todo mês no mesmo dia e horário'}
+                        {scheduleForm.recurrence_type === 'weekly' && 'Repetir por 7 dias (semana corrente)'}
+                        {scheduleForm.recurrence_type === 'monthly' && 'Repetir até o fim do mês corrente'}
                         {scheduleForm.recurrence_type === 'semester_1' && 'Todas as semanas de Janeiro a Junho'}
                         {scheduleForm.recurrence_type === 'semester_2' && 'Todas as semanas de Julho a Dezembro'}
                         {scheduleForm.recurrence_type === 'annual' && 'Todas as semanas durante o ano todo'}
