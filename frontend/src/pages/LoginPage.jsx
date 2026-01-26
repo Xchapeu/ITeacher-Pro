@@ -19,17 +19,28 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/auth/login`, formData);
-      localStorage.setItem('token', response.data.token);
-      toast.success('Login realizado com sucesso!');
+      const response = await axios.post(`${BACKEND_URL}/api/auth/login`, formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        toast.success('Login realizado com sucesso!');
 
-      if (response.data.user.user_type === 'institution') {
-        navigate('/institution', { state: { user: response.data.user } });
+        if (response.data.user.user_type === 'institution') {
+          navigate('/institution', { state: { user: response.data.user } });
+        } else {
+          navigate('/teacher', { state: { user: response.data.user } });
+        }
       } else {
-        navigate('/teacher', { state: { user: response.data.user } });
+        console.error('Invalid response:', response.data);
+        toast.error('Resposta inválida do servidor');
       }
     } catch (error) {
       console.error('Login error:', error);
+      console.error('Error details:', error.response?.data);
       toast.error(error.response?.data?.detail || 'Erro ao fazer login');
     } finally {
       setLoading(false);
