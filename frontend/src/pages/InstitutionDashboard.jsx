@@ -129,6 +129,19 @@ export const InstitutionDashboard = () => {
                 Turmas
               </Button>
             </Link>
+            <Link to="/institution/subjects" data-testid="nav-subjects">
+              <Button
+                variant="ghost"
+                className={`w-full justify-start gap-3 ${
+                  location.pathname === '/institution/subjects'
+                    ? 'bg-sky-50 text-primary'
+                    : 'text-slate-600 hover:text-primary hover:bg-sky-50'
+                }`}
+              >
+                <BookOpen className="h-5 w-5" />
+                Matérias
+              </Button>
+            </Link>
             <Link to="/institution/teachers" data-testid="nav-teachers">
               <Button
                 variant="ghost"
