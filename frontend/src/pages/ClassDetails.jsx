@@ -73,15 +73,19 @@ export const ClassDetails = () => {
 
   const fetchClassData = async () => {
     try {
-      const [classRes, studentsRes, materialsRes] = await Promise.all([
+      const [classRes, studentsRes, materialsRes, schedulesRes, teachersRes] = await Promise.all([
         axios.get(`${BACKEND_URL}/api/classes/${classId}`, getAuthHeaders()),
         axios.get(`${BACKEND_URL}/api/students/class/${classId}`, getAuthHeaders()),
-        axios.get(`${BACKEND_URL}/api/materials/class/${classId}`, getAuthHeaders())
+        axios.get(`${BACKEND_URL}/api/materials/class/${classId}`, getAuthHeaders()),
+        axios.get(`${BACKEND_URL}/api/schedules/class/${classId}`, getAuthHeaders()),
+        axios.get(`${BACKEND_URL}/api/classes/${classId}/teachers`, getAuthHeaders())
       ]);
 
       setClassData(classRes.data);
       setStudents(studentsRes.data);
       setMaterials(materialsRes.data);
+      setSchedules(schedulesRes.data);
+      setTeachers(teachersRes.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching class data:', error);
