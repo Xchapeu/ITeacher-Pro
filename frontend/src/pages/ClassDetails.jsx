@@ -102,6 +102,7 @@ export const ClassDetails = () => {
 
   const handleAddStudent = async (e) => {
     e.preventDefault();
+    setShowStudentDialog(false); // Close dialog immediately
     try {
       await axios.post(
         `${BACKEND_URL}/api/students`,
@@ -109,7 +110,6 @@ export const ClassDetails = () => {
         getAuthHeaders()
       );
       toast.success('Aluno adicionado com sucesso!');
-      setShowStudentDialog(false);
       setStudentForm({ name: '', email: '', enrollment_number: '' });
       fetchClassData();
     } catch (error) {
@@ -120,6 +120,7 @@ export const ClassDetails = () => {
 
   const handleAddSchedule = async (e) => {
     e.preventDefault();
+    setShowScheduleDialog(false); // Close dialog immediately
     try {
       const updatedSchedule = [...(classData.schedule || []), scheduleForm];
       await axios.put(
@@ -132,7 +133,6 @@ export const ClassDetails = () => {
         getAuthHeaders()
       );
       toast.success('Horário adicionado com sucesso!');
-      setShowScheduleDialog(false);
       setScheduleForm({ day: 'Segunda', time: '08:00', duration: '60' });
       fetchClassData();
     } catch (error) {
