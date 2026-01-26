@@ -511,23 +511,51 @@ async def assign_teacher(assignment: TeacherAssignment, current_user: dict = Dep
     if not class_doc or class_doc["institution_id"] != current_user["user_id"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
+    # Verify subject belongs to institution
+    subject_doc = await db.subjects.find_one({"subject_id": assignment.subject_id}, {"_id": 0})
+    if not subject_doc or subject_doc["institution_id"] != current_user["user_id"]:
+        raise HTTPException(status_code=403, detail="Subject not found or not authorized")
+    
     existing = await db.teacher_assignments.find_one({
         "teacher_id": assignment.teacher_id,
+        "subject_id": assignment.subject_id,
         "class_id": assignment.class_id
     }, {"_id": 0})
     
     if existing:
-        raise HTTPException(status_code=400, detail="Teacher already assigned")
+        raise HTTPException(status_code=400, detail="Teacher already assigned to this subject in this class")
     
     assignment_doc = {
         "assignment_id": f"assign_{uuid.uuid4().hex[:12]}",
         "teacher_id": assignment.teacher_id,
+        "subject_id": assignment.subject_id,
         "class_id": assignment.class_id,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     await db.teacher_assignments.insert_one(assignment_doc)
     return {"message": "Teacher assigned successfully"}
+
+@api_router.get("/teacher-assignments/class/{class_id}")
+async def get_class_assignments(class_id: str, current_user: dict = Depends(get_current_user)):
+    assignments = await db.teacher_assignments.find({"class_id": class_id}, {"_id": 0}).to_list(1000)
+    
+    # Enrich with teacher and subject data
+    for assignment in assignments:
+        teacher = await db.users.find_one({"user_id": assignment["teacher_id"]}, {"_id": 0, "password_hash": 0})
+        subject = await db.subjects.find_one({"subject_id": assignment["subject_id"]}, {"_id": 0})
+        assignment["teacher"] = teacher
+        assignment["subject"] = subject
+    
+    return assignments
+
+@api_router.delete("/teacher-assignments/{assignment_id}")
+async def remove_teacher_assignment(assignment_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] != "institution":
+        raise HTTPException(status_code=403, detail="Only institutions can remove assignments")
+    
+    await db.teacher_assignments.delete_one({"assignment_id": assignment_id})
+    return {"message": "Assignment removed successfully"}
 
 @api_router.get("/teachers")
 async def get_teachers(current_user: dict = Depends(get_current_user)):
