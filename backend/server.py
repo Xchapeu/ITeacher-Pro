@@ -650,8 +650,9 @@ async def get_materials_by_class(class_id: str, subject_id: Optional[str] = None
             "class_id": class_id
         }, {"_id": 0}).to_list(1000)
         
-        teacher_subject_ids = [a["subject_id"] for a in assignments]
-        query["subject_id"] = {"$in": teacher_subject_ids}
+        teacher_subject_ids = [a["subject_id"] for a in assignments if "subject_id" in a]
+        if teacher_subject_ids:
+            query["subject_id"] = {"$in": teacher_subject_ids}
     
     # Optional filter by specific subject
     if subject_id:
@@ -662,9 +663,12 @@ async def get_materials_by_class(class_id: str, subject_id: Optional[str] = None
     for m in materials:
         if isinstance(m["created_at"], str):
             m["created_at"] = datetime.fromisoformat(m["created_at"])
-        # Add subject info
-        subject = await db.subjects.find_one({"subject_id": m["subject_id"]}, {"_id": 0})
-        m["subject"] = subject
+        # Add subject info if subject_id exists
+        if "subject_id" in m and m["subject_id"]:
+            subject = await db.subjects.find_one({"subject_id": m["subject_id"]}, {"_id": 0})
+            m["subject"] = subject
+        else:
+            m["subject"] = None
     
     return materials
 
