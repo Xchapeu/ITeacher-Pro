@@ -419,6 +419,87 @@ async def delete_class(class_id: str, current_user: dict = Depends(get_current_u
     await db.classes.delete_one({"class_id": class_id})
     return {"message": "Class deleted successfully"}
 
+# ==== SUBJECTS ROUTES ====
+
+@api_router.post("/subjects", response_model=Subject)
+async def create_subject(subject_data: SubjectCreate, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] != "institution":
+        raise HTTPException(status_code=403, detail="Only institutions can create subjects")
+    
+    subject_id = f"subject_{uuid.uuid4().hex[:12]}"
+    subject_doc = {
+        "subject_id": subject_id,
+        "name": subject_data.name,
+        "description": subject_data.description,
+        "institution_id": current_user["user_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.subjects.insert_one(subject_doc)
+    
+    return Subject(
+        subject_id=subject_id,
+        name=subject_data.name,
+        description=subject_data.description,
+        institution_id=current_user["user_id"],
+        created_at=datetime.now(timezone.utc)
+    )
+
+@api_router.get("/subjects", response_model=List[Subject])
+async def get_subjects(current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] == "institution":
+        subjects = await db.subjects.find({"institution_id": current_user["user_id"]}, {"_id": 0}).to_list(1000)
+    else:
+        # Teachers see subjects they are assigned to
+        assignments = await db.teacher_assignments.find({"teacher_id": current_user["user_id"]}, {"_id": 0}).to_list(1000)
+        subject_ids = list(set([a["subject_id"] for a in assignments]))
+        subjects = await db.subjects.find({"subject_id": {"$in": subject_ids}}, {"_id": 0}).to_list(1000) if subject_ids else []
+    
+    for s in subjects:
+        if isinstance(s["created_at"], str):
+            s["created_at"] = datetime.fromisoformat(s["created_at"])
+    
+    return subjects
+
+@api_router.get("/subjects/{subject_id}", response_model=Subject)
+async def get_subject(subject_id: str, current_user: dict = Depends(get_current_user)):
+    subject_doc = await db.subjects.find_one({"subject_id": subject_id}, {"_id": 0})
+    if not subject_doc:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    
+    if isinstance(subject_doc["created_at"], str):
+        subject_doc["created_at"] = datetime.fromisoformat(subject_doc["created_at"])
+    
+    return Subject(**subject_doc)
+
+@api_router.put("/subjects/{subject_id}")
+async def update_subject(subject_id: str, subject_data: SubjectBase, current_user: dict = Depends(get_current_user)):
+    subject_doc = await db.subjects.find_one({"subject_id": subject_id}, {"_id": 0})
+    if not subject_doc:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    
+    if current_user["user_type"] != "institution" or subject_doc["institution_id"] != current_user["user_id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.subjects.update_one(
+        {"subject_id": subject_id},
+        {"$set": {"name": subject_data.name, "description": subject_data.description}}
+    )
+    
+    return {"message": "Subject updated successfully"}
+
+@api_router.delete("/subjects/{subject_id}")
+async def delete_subject(subject_id: str, current_user: dict = Depends(get_current_user)):
+    subject_doc = await db.subjects.find_one({"subject_id": subject_id}, {"_id": 0})
+    if not subject_doc:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    
+    if current_user["user_type"] != "institution" or subject_doc["institution_id"] != current_user["user_id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.subjects.delete_one({"subject_id": subject_id})
+    return {"message": "Subject deleted successfully"}
+
 # ==== TEACHER ASSIGNMENTS ====
 
 @api_router.post("/teacher-assignments")
