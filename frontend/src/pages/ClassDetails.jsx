@@ -132,23 +132,47 @@ export const ClassDetails = () => {
     e.preventDefault();
     setShowScheduleDialog(false); // Close dialog immediately
     try {
-      const updatedSchedule = [...(classData.schedule || []), scheduleForm];
-      await axios.put(
-        `${BACKEND_URL}/api/classes/${classId}`,
-        {
-          name: classData.name,
-          description: classData.description,
-          schedule: updatedSchedule
-        },
+      await axios.post(
+        `${BACKEND_URL}/api/schedules`,
+        { ...scheduleForm, class_id: classId },
         getAuthHeaders()
       );
       toast.success('Horário adicionado com sucesso!');
-      setScheduleForm({ day: 'Segunda', time: '08:00', duration: '60' });
+      setScheduleForm({
+        teacher_id: '',
+        subject_id: '',
+        day_of_week: 'Segunda',
+        time: '08:00',
+        duration: 60,
+        recurrence_type: 'weekly',
+        start_date: format(new Date(), 'yyyy-MM-dd')
+      });
       fetchClassData();
     } catch (error) {
       console.error('Error adding schedule:', error);
       toast.error('Erro ao adicionar horário');
     }
+  };
+
+  const handleDeleteSchedule = async (scheduleId) => {
+    if (!window.confirm('Tem certeza que deseja excluir este horário?')) return;
+    try {
+      await axios.delete(`${BACKEND_URL}/api/schedules/${scheduleId}`, getAuthHeaders());
+      toast.success('Horário excluído com sucesso!');
+      fetchClassData();
+    } catch (error) {
+      console.error('Error deleting schedule:', error);
+      toast.error('Erro ao excluir horário');
+    }
+  };
+
+  const handleTeacherChange = (teacherId) => {
+    const teacher = teachers.find(t => t.teacher_id === teacherId);
+    setScheduleForm({
+      ...scheduleForm,
+      teacher_id: teacherId,
+      subject_id: teacher ? teacher.subject_id : ''
+    });
   };
 
   const handleMarkAttendance = async (studentId, status) => {
