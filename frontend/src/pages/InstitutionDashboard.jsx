@@ -434,10 +434,10 @@ const SubjectsView = ({ subjects, fetchData }) => {
 
   const handleCreateSubject = async (e) => {
     e.preventDefault();
+    setShowDialog(false); // Close dialog immediately
     try {
       await axios.post(`${BACKEND_URL}/api/subjects`, formData, getAuthHeaders());
       toast.success('Matéria criada com sucesso!');
-      setShowDialog(false);
       setFormData({ name: '', description: '' });
       fetchData();
     } catch (error) {
