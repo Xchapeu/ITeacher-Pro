@@ -58,6 +58,24 @@ class SessionData(BaseModel):
     user_id: str
     session_token: str
 
+class ScheduleBase(BaseModel):
+    teacher_id: str
+    subject_id: str
+    day_of_week: str  # 'Monday', 'Tuesday', etc
+    time: str  # '08:00'
+    duration: int  # minutes
+    recurrence_type: str  # 'once', 'weekly', 'monthly', 'semester_1', 'semester_2', 'annual'
+    start_date: str  # 'YYYY-MM-DD'
+
+class ScheduleCreate(ScheduleBase):
+    class_id: str
+
+class Schedule(ScheduleBase):
+    schedule_id: str
+    class_id: str
+    end_date: str  # Calculated based on recurrence
+    created_at: datetime
+
 class ClassBase(BaseModel):
     name: str
     description: Optional[str] = None
