@@ -545,8 +545,9 @@ async def upload_file(file: UploadFile = File(...), current_user: dict = Depends
 
 @api_router.post("/attendance", response_model=Attendance)
 async def mark_attendance(attendance_data: AttendanceCreate, current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] != "teacher":
-        raise HTTPException(status_code=403, detail="Only teachers can mark attendance")
+    # Allow both teachers and institutions to mark attendance
+    if current_user["user_type"] not in ["teacher", "institution"]:
+        raise HTTPException(status_code=403, detail="Only teachers and institutions can mark attendance")
     
     existing = await db.attendance.find_one({
         "student_id": attendance_data.student_id,
@@ -563,7 +564,15 @@ async def mark_attendance(attendance_data: AttendanceCreate, current_user: dict 
             },
             {"$set": {"status": attendance_data.status}}
         )
-        return Attendance(**existing)
+        # Return updated data
+        updated_doc = await db.attendance.find_one({
+            "student_id": attendance_data.student_id,
+            "class_id": attendance_data.class_id,
+            "date": attendance_data.date
+        }, {"_id": 0})
+        if isinstance(updated_doc["created_at"], str):
+            updated_doc["created_at"] = datetime.fromisoformat(updated_doc["created_at"])
+        return Attendance(**updated_doc)
     
     attendance_id = f"attendance_{uuid.uuid4().hex[:12]}"
     attendance_doc = {
