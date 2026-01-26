@@ -31,6 +31,8 @@ export const ClassDetails = () => {
   const [classData, setClassData] = useState(null);
   const [students, setStudents] = useState([]);
   const [materials, setMaterials] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [showStudentDialog, setShowStudentDialog] = useState(false);
@@ -41,9 +43,13 @@ export const ClassDetails = () => {
     enrollment_number: ''
   });
   const [scheduleForm, setScheduleForm] = useState({
-    day: 'Segunda',
+    teacher_id: '',
+    subject_id: '',
+    day_of_week: 'Segunda',
     time: '08:00',
-    duration: '60'
+    duration: 60,
+    recurrence_type: 'weekly',
+    start_date: format(new Date(), 'yyyy-MM-dd')
   });
   const [loading, setLoading] = useState(true);
 
