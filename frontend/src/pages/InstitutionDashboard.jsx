@@ -198,7 +198,7 @@ export const InstitutionDashboard = () => {
   );
 };
 
-const Overview = ({ classes, teachers, user }) => {
+const Overview = ({ classes, teachers, subjects, user }) => {
   return (
     <div className="space-y-8" data-testid="institution-overview">
       <div>
@@ -208,7 +208,7 @@ const Overview = ({ classes, teachers, user }) => {
         <p className="text-slate-600 mt-2">Visão geral da sua instituição</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-4 gap-6">
         <Card className="border-slate-200">
           <CardHeader>
             <CardTitle className="text-slate-900 flex items-center gap-3">
@@ -218,6 +218,18 @@ const Overview = ({ classes, teachers, user }) => {
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold text-primary">{classes.length}</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200">
+          <CardHeader>
+            <CardTitle className="text-slate-900 flex items-center gap-3">
+              <BookOpen className="h-6 w-6 text-primary" />
+              Matérias
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold text-primary">{subjects.length}</p>
           </CardContent>
         </Card>
 
@@ -241,7 +253,7 @@ const Overview = ({ classes, teachers, user }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg font-medium text-slate-600">Todos os sistemas operacionais</p>
+            <p className="text-lg font-medium text-slate-600">Operacional</p>
           </CardContent>
         </Card>
       </div>
