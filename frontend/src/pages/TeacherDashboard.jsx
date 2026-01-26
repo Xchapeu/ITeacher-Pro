@@ -345,6 +345,24 @@ const Materials = ({ classes, fetchData }) => {
                 </select>
               </div>
               <div>
+                <Label htmlFor="subject">Matéria</Label>
+                <select
+                  id="subject"
+                  data-testid="select-subject-material"
+                  value={formData.subject_id}
+                  onChange={(e) => setFormData({ ...formData, subject_id: e.target.value })}
+                  className="w-full h-12 bg-slate-50 border-slate-200 rounded-lg px-4"
+                  required
+                >
+                  <option value="">Selecione uma matéria</option>
+                  {subjects.map((subject) => (
+                    <option key={subject.subject_id} value={subject.subject_id}>
+                      {subject.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
                 <Label htmlFor="title">Título</Label>
                 <Input
                   id="title"
