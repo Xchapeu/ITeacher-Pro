@@ -109,10 +109,12 @@ class MaterialBase(BaseModel):
 
 class MaterialCreate(MaterialBase):
     class_id: str
+    subject_id: str
 
 class Material(MaterialBase):
     material_id: str
     class_id: str
+    subject_id: str
     uploaded_by: str
     created_at: datetime
 
