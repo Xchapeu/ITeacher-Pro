@@ -293,10 +293,10 @@ const Materials = ({ classes, fetchData }) => {
 
   const handleCreateMaterial = async (e) => {
     e.preventDefault();
+    setShowDialog(false); // Close dialog immediately
     try {
       await axios.post(`${BACKEND_URL}/api/materials`, formData, getAuthHeaders());
       toast.success('Material criado com sucesso!');
-      setShowDialog(false);
       setFormData({ title: '', description: '', content: '', class_id: '', subject_id: '' });
       if (selectedClass) {
         fetchMaterials(selectedClass);
