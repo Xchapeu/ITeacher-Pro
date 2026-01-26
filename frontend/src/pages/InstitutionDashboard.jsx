@@ -543,6 +543,7 @@ const SubjectsView = ({ subjects, fetchData }) => {
 const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
 
   const getAuthHeaders = () => {
@@ -558,12 +559,17 @@ const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
     try {
       await axios.post(
         `${BACKEND_URL}/api/teacher-assignments`,
-        { teacher_id: selectedTeacher, class_id: selectedClass },
+        { 
+          teacher_id: selectedTeacher, 
+          subject_id: selectedSubject,
+          class_id: selectedClass 
+        },
         getAuthHeaders()
       );
       toast.success('Professor atribuído à turma com sucesso!');
       setShowAssignDialog(false);
       setSelectedTeacher('');
+      setSelectedSubject('');
       setSelectedClass('');
       fetchData();
     } catch (error) {
@@ -605,6 +611,24 @@ const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
                   {teachers.map((teacher) => (
                     <option key={teacher.user_id} value={teacher.user_id}>
                       {teacher.name} ({teacher.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="subject">Matéria</Label>
+                <select
+                  id="subject"
+                  data-testid="select-subject"
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full h-12 bg-slate-50 border-slate-200 rounded-lg px-4"
+                  required
+                >
+                  <option value="">Selecione uma matéria</option>
+                  {subjects.map((subject) => (
+                    <option key={subject.subject_id} value={subject.subject_id}>
+                      {subject.name}
                     </option>
                   ))}
                 </select>
