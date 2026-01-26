@@ -84,8 +84,21 @@ class Student(StudentBase):
     class_id: str
     created_at: datetime
 
+class SubjectBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class SubjectCreate(SubjectBase):
+    pass
+
+class Subject(SubjectBase):
+    subject_id: str
+    institution_id: str
+    created_at: datetime
+
 class TeacherAssignment(BaseModel):
     teacher_id: str
+    subject_id: str
     class_id: str
 
 class MaterialBase(BaseModel):
