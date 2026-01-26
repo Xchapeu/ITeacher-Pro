@@ -205,7 +205,7 @@ async def get_current_user(request: Request, session_token: Optional[str] = Cook
 
 @api_router.get("/")
 async def health_check():
-    return {"message": "EduFlow API is running", "status": "healthy"}
+    return {"message": "ITeacher API is running", "status": "healthy"}
 
 # ==== AUTH ROUTES ====
 
