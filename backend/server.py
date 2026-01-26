@@ -434,6 +434,145 @@ async def delete_class(class_id: str, current_user: dict = Depends(get_current_u
     await db.classes.delete_one({"class_id": class_id})
     return {"message": "Class deleted successfully"}
 
+# ==== SCHEDULES ROUTES ====
+
+def calculate_end_date(start_date_str: str, recurrence_type: str) -> str:
+    start_date = datetime.fromisoformat(start_date_str)
+    
+    if recurrence_type == "once":
+        return start_date_str
+    elif recurrence_type == "weekly":
+        # Until end of year
+        end_date = datetime(start_date.year, 12, 31)
+    elif recurrence_type == "monthly":
+        # Until end of year
+        end_date = datetime(start_date.year, 12, 31)
+    elif recurrence_type == "semester_1":
+        # January to June
+        end_date = datetime(start_date.year, 6, 30)
+    elif recurrence_type == "semester_2":
+        # July to December  
+        end_date = datetime(start_date.year, 12, 31)
+    elif recurrence_type == "annual":
+        # Full year
+        end_date = datetime(start_date.year, 12, 31)
+    else:
+        end_date = start_date
+    
+    return end_date.isoformat()
+
+@api_router.get("/classes/{class_id}/teachers")
+async def get_class_teachers(class_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all teachers assigned to this class with their subjects"""
+    assignments = await db.teacher_assignments.find({"class_id": class_id}, {"_id": 0}).to_list(1000)
+    
+    teachers_data = []
+    for assignment in assignments:
+        teacher = await db.users.find_one({"user_id": assignment["teacher_id"]}, {"_id": 0, "password_hash": 0})
+        subject = await db.subjects.find_one({"subject_id": assignment.get("subject_id")}, {"_id": 0})
+        
+        if teacher and subject:
+            teachers_data.append({
+                "teacher_id": teacher["user_id"],
+                "teacher_name": teacher["name"],
+                "subject_id": subject["subject_id"],
+                "subject_name": subject["name"],
+                "assignment_id": assignment.get("assignment_id")
+            })
+    
+    return teachers_data
+
+@api_router.post("/schedules", response_model=Schedule)
+async def create_schedule(schedule_data: ScheduleCreate, current_user: dict = Depends(get_current_user)):
+    # Verify class exists and user has permission
+    class_doc = await db.classes.find_one({"class_id": schedule_data.class_id}, {"_id": 0})
+    if not class_doc:
+        raise HTTPException(status_code=404, detail="Class not found")
+    
+    # Only institution or assigned teacher can add schedules
+    if current_user["user_type"] == "institution":
+        if class_doc["institution_id"] != current_user["user_id"]:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    elif current_user["user_type"] == "teacher":
+        assignment = await db.teacher_assignments.find_one({
+            "teacher_id": current_user["user_id"],
+            "class_id": schedule_data.class_id
+        }, {"_id": 0})
+        if not assignment:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    else:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Calculate end date based on recurrence
+    end_date = calculate_end_date(schedule_data.start_date, schedule_data.recurrence_type)
+    
+    schedule_id = f"schedule_{uuid.uuid4().hex[:12]}"
+    schedule_doc = {
+        "schedule_id": schedule_id,
+        "class_id": schedule_data.class_id,
+        "teacher_id": schedule_data.teacher_id,
+        "subject_id": schedule_data.subject_id,
+        "day_of_week": schedule_data.day_of_week,
+        "time": schedule_data.time,
+        "duration": schedule_data.duration,
+        "recurrence_type": schedule_data.recurrence_type,
+        "start_date": schedule_data.start_date,
+        "end_date": end_date,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.schedules.insert_one(schedule_doc)
+    
+    return Schedule(
+        schedule_id=schedule_id,
+        class_id=schedule_data.class_id,
+        teacher_id=schedule_data.teacher_id,
+        subject_id=schedule_data.subject_id,
+        day_of_week=schedule_data.day_of_week,
+        time=schedule_data.time,
+        duration=schedule_data.duration,
+        recurrence_type=schedule_data.recurrence_type,
+        start_date=schedule_data.start_date,
+        end_date=end_date,
+        created_at=datetime.now(timezone.utc)
+    )
+
+@api_router.get("/schedules/class/{class_id}")
+async def get_class_schedules(class_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all schedules for a class with teacher and subject info"""
+    schedules = await db.schedules.find({"class_id": class_id}, {"_id": 0}).to_list(1000)
+    
+    for schedule in schedules:
+        # Add teacher info
+        teacher = await db.users.find_one({"user_id": schedule["teacher_id"]}, {"_id": 0, "password_hash": 0})
+        schedule["teacher_name"] = teacher["name"] if teacher else "Unknown"
+        
+        # Add subject info
+        subject = await db.subjects.find_one({"subject_id": schedule["subject_id"]}, {"_id": 0})
+        schedule["subject_name"] = subject["name"] if subject else "Unknown"
+    
+    return schedules
+
+@api_router.delete("/schedules/{schedule_id}")
+async def delete_schedule(schedule_id: str, current_user: dict = Depends(get_current_user)):
+    schedule_doc = await db.schedules.find_one({"schedule_id": schedule_id}, {"_id": 0})
+    if not schedule_doc:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+    
+    # Verify authorization
+    class_doc = await db.classes.find_one({"class_id": schedule_doc["class_id"]}, {"_id": 0})
+    if current_user["user_type"] == "institution":
+        if class_doc["institution_id"] != current_user["user_id"]:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    elif current_user["user_type"] == "teacher":
+        if schedule_doc["teacher_id"] != current_user["user_id"]:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    else:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.schedules.delete_one({"schedule_id": schedule_id})
+    return {"message": "Schedule deleted successfully"}
+
 # ==== SUBJECTS ROUTES ====
 
 @api_router.post("/subjects", response_model=Subject)
