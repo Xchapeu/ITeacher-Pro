@@ -171,7 +171,7 @@ const MyClasses = ({ classes, user }) => {
         <h1 className="text-4xl font-heading font-bold text-slate-900">
           Olá, {user?.name}
         </h1>
-        <p className="text-slate-600 mt-2">Suas turmas atribuídas</p>
+        <p className="text-slate-600 mt-2">Suas turmas e matérias atribuídas</p>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
@@ -180,6 +180,18 @@ const MyClasses = ({ classes, user }) => {
             <CardHeader>
               <CardTitle className="text-slate-900">{cls.name}</CardTitle>
               <CardDescription>{cls.description || 'Sem descrição'}</CardDescription>
+              {cls.subjects && cls.subjects.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {cls.subjects.map((subject) => (
+                    <span
+                      key={subject.subject_id}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-sky-100 text-primary"
+                    >
+                      {subject.name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <Link to={`/class/${cls.class_id}`}>
@@ -196,7 +208,7 @@ const MyClasses = ({ classes, user }) => {
         <div className="text-center py-16">
           <BookOpen className="h-16 w-16 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-600">Você ainda não foi atribuído a nenhuma turma</p>
-          <p className="text-sm text-slate-500 mt-2">Aguarde a instituição atribuir turmas para você</p>
+          <p className="text-sm text-slate-500 mt-2">Aguarde a instituição atribuir turmas e matérias para você</p>
         </div>
       )}
     </div>
