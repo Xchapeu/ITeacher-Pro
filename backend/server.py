@@ -79,7 +79,7 @@ class Schedule(ScheduleBase):
 class ClassBase(BaseModel):
     name: str
     description: Optional[str] = None
-    schedule: List[dict] = []  # [{"day": "Monday", "time": "10:00", "duration": "60"}]
+    # schedule field removed - now stored separately
 
 class ClassCreate(ClassBase):
     pass
