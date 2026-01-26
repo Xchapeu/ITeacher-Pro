@@ -25,17 +25,28 @@ export const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/auth/register`, formData);
-      localStorage.setItem('token', response.data.token);
-      toast.success('Conta criada com sucesso!');
+      const response = await axios.post(`${BACKEND_URL}/api/auth/register`, formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        toast.success('Conta criada com sucesso!');
 
-      if (response.data.user.user_type === 'institution') {
-        navigate('/institution', { state: { user: response.data.user } });
+        if (response.data.user.user_type === 'institution') {
+          navigate('/institution', { state: { user: response.data.user } });
+        } else {
+          navigate('/teacher', { state: { user: response.data.user } });
+        }
       } else {
-        navigate('/teacher', { state: { user: response.data.user } });
+        console.error('Invalid response:', response.data);
+        toast.error('Resposta inválida do servidor');
       }
     } catch (error) {
       console.error('Registration error:', error);
+      console.error('Error details:', error.response?.data);
       toast.error(error.response?.data?.detail || 'Erro ao criar conta');
     } finally {
       setLoading(false);
