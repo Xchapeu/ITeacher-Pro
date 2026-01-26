@@ -417,11 +417,7 @@ async def update_class(class_id: str, class_data: ClassBase, current_user: dict 
     
     await db.classes.update_one(
         {"class_id": class_id},
-        {"$set": {
-            "name": class_data.name,
-            "description": class_data.description,
-            "schedule": class_data.schedule
-        }}
+        {"$set": {"name": class_data.name, "description": class_data.description}}
     )
     
     return {"message": "Class updated successfully"}
