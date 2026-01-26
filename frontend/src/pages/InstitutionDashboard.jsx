@@ -28,6 +28,7 @@ export const InstitutionDashboard = () => {
   const [user, setUser] = useState(null);
   const [classes, setClasses] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [students, setStudents] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
