@@ -366,9 +366,12 @@ async def get_classes(current_user: dict = Depends(get_current_user)):
         # Add subject information to each class
         for cls in classes:
             cls_assignments = [a for a in assignments if a["class_id"] == cls["class_id"]]
-            subject_ids = [a["subject_id"] for a in cls_assignments]
-            subjects = await db.subjects.find({"subject_id": {"$in": subject_ids}}, {"_id": 0}).to_list(100)
-            cls["subjects"] = subjects
+            subject_ids = [a.get("subject_id") for a in cls_assignments if a.get("subject_id")]
+            if subject_ids:
+                subjects = await db.subjects.find({"subject_id": {"$in": subject_ids}}, {"_id": 0}).to_list(100)
+                cls["subjects"] = subjects
+            else:
+                cls["subjects"] = []
     
     for c in classes:
         if isinstance(c["created_at"], str):
