@@ -434,8 +434,17 @@ const Materials = ({ classes, fetchData }) => {
         {materials.map((material) => (
           <Card key={material.material_id} className="border-slate-200" data-testid={`material-${material.material_id}`}>
             <CardHeader>
-              <CardTitle className="text-slate-900">{material.title}</CardTitle>
-              <CardDescription>{material.description || 'Sem descrição'}</CardDescription>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle className="text-slate-900">{material.title}</CardTitle>
+                  <CardDescription>{material.description || 'Sem descrição'}</CardDescription>
+                </div>
+                {material.subject && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-sky-100 text-primary">
+                    {material.subject.name}
+                  </span>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               {material.content && (
