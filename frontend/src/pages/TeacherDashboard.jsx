@@ -219,11 +219,13 @@ const Materials = ({ classes, fetchData }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedClass, setSelectedClass] = useState('');
   const [materials, setMaterials] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     content: '',
-    class_id: ''
+    class_id: '',
+    subject_id: ''
   });
   const [uploadingFile, setUploadingFile] = useState(false);
 
@@ -236,10 +238,23 @@ const Materials = ({ classes, fetchData }) => {
   };
 
   useEffect(() => {
+    fetchSubjects();
+  }, []);
+
+  useEffect(() => {
     if (selectedClass) {
       fetchMaterials(selectedClass);
     }
   }, [selectedClass]);
+
+  const fetchSubjects = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/subjects`, getAuthHeaders());
+      setSubjects(response.data);
+    } catch (error) {
+      console.error('Error fetching subjects:', error);
+    }
+  };
 
   const fetchMaterials = async (classId) => {
     try {
