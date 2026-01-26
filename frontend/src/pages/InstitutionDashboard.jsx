@@ -417,7 +417,130 @@ const ClassesView = ({ classes, fetchData }) => {
   );
 };
 
-const TeachersView = ({ teachers, classes, fetchData }) => {
+const SubjectsView = ({ subjects, fetchData }) => {
+  const [showDialog, setShowDialog] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: ''
+  });
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      withCredentials: true,
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    };
+  };
+
+  const handleCreateSubject = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${BACKEND_URL}/api/subjects`, formData, getAuthHeaders());
+      toast.success('Matéria criada com sucesso!');
+      setShowDialog(false);
+      setFormData({ name: '', description: '' });
+      fetchData();
+    } catch (error) {
+      console.error('Error creating subject:', error);
+      toast.error('Erro ao criar matéria');
+    }
+  };
+
+  const handleDeleteSubject = async (subjectId) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta matéria?')) return;
+    try {
+      await axios.delete(`${BACKEND_URL}/api/subjects/${subjectId}`, getAuthHeaders());
+      toast.success('Matéria excluída com sucesso!');
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting subject:', error);
+      toast.error('Erro ao excluir matéria');
+    }
+  };
+
+  return (
+    <div className="space-y-6" data-testid="subjects-view">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-heading font-bold text-slate-900">Matérias</h1>
+          <p className="text-slate-600">Gerencie as matérias da instituição</p>
+        </div>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogTrigger asChild>
+            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-6 py-6 font-semibold gap-2" data-testid="create-subject-btn">
+              <Plus className="h-5 w-5" />
+              Nova Matéria
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Criar Nova Matéria</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateSubject} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Nome da Matéria</Label>
+                <Input
+                  id="name"
+                  data-testid="subject-name-input"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Ex: Matemática"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Descrição</Label>
+                <Textarea
+                  id="description"
+                  data-testid="subject-description-input"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Descrição da matéria"
+                />
+              </div>
+              <Button type="submit" className="w-full" data-testid="submit-subject-btn">
+                Criar Matéria
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="grid grid-cols-4 gap-6">
+        {subjects.map((subject) => (
+          <Card key={subject.subject_id} className="border-slate-200 hover:border-primary/20 transition-colors" data-testid={`subject-card-${subject.subject_id}`}>
+            <CardHeader>
+              <CardTitle className="text-slate-900">{subject.name}</CardTitle>
+              <CardDescription>{subject.description || 'Sem descrição'}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleDeleteSubject(subject.subject_id)}
+                className="text-red-600 hover:bg-red-50 w-full"
+                data-testid={`delete-subject-${subject.subject_id}`}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Excluir
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {subjects.length === 0 && (
+        <div className="text-center py-16">
+          <BookOpen className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-600">Nenhuma matéria cadastrada ainda</p>
+          <p className="text-sm text-slate-500 mt-2">Clique em "Nova Matéria" para começar</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
