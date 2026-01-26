@@ -307,10 +307,10 @@ const ClassesView = ({ classes, fetchData }) => {
 
   const handleCreateClass = async (e) => {
     e.preventDefault();
+    setShowDialog(false); // Close dialog immediately
     try {
       await axios.post(`${BACKEND_URL}/api/classes`, formData, getAuthHeaders());
       toast.success('Turma criada com sucesso!');
-      setShowDialog(false);
       setFormData({ name: '', description: '', schedule: [] });
       fetchData();
     } catch (error) {
