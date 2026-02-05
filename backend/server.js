@@ -1163,6 +1163,16 @@ app.get('/api/export/attendance/:class_id/csv', authenticate, async (req, res) =
       });
     });
 
+    // Handle empty data case
+    if (data.length === 0) {
+      const fields = ['Nome do Aluno', 'Email', 'Matrícula', 'Presenças', 'Ausências', 'Atrasos', 'Total de Aulas', 'Taxa de Presença (%)'];
+      const parser = new Parser({ fields });
+      const csv = parser.parse([]);
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename=relatorio_presenca_${class_id}.csv`);
+      return res.send('\uFEFF' + csv);
+    }
+
     const parser = new Parser();
     const csv = parser.parse(data);
 
