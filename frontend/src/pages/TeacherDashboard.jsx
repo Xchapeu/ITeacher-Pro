@@ -538,20 +538,20 @@ const Messages = ({ messages, fetchData }) => {
   return (
     <div className="space-y-6" data-testid="teacher-messages">
       <div>
-        <h1 className="text-3xl font-heading font-bold text-slate-900">Mensagens</h1>
-        <p className="text-slate-600">Suas conversas com a instituição</p>
+        <h1 className="text-2xl lg:text-3xl font-heading font-bold text-slate-900">Mensagens</h1>
+        <p className="text-sm lg:text-base text-slate-600">Suas conversas com a instituição</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 lg:space-y-4">
         {messages.map((msg) => (
           <Card key={msg.message_id} className="border-slate-200" data-testid={`message-${msg.message_id}`}>
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-4">
-                <div className="h-10 w-10 bg-sky-100 rounded-full flex items-center justify-center">
-                  <MessageSquare className="h-5 w-5 text-primary" />
+            <CardContent className="p-4 lg:pt-6">
+              <div className="flex items-start gap-3 lg:gap-4">
+                <div className="h-8 w-8 lg:h-10 lg:w-10 bg-sky-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <MessageSquare className="h-4 w-4 lg:h-5 lg:w-5 text-primary" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-slate-600">{msg.content}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm lg:text-base text-slate-600">{msg.content}</p>
                   <p className="text-xs text-slate-400 mt-2">
                     {new Date(msg.created_at).toLocaleDateString('pt-BR')}
                   </p>
@@ -563,8 +563,8 @@ const Messages = ({ messages, fetchData }) => {
       </div>
 
       {messages.length === 0 && (
-        <div className="text-center py-16">
-          <MessageSquare className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+        <div className="text-center py-12 lg:py-16">
+          <MessageSquare className="h-12 w-12 lg:h-16 lg:w-16 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-600">Nenhuma mensagem ainda</p>
         </div>
       )}
