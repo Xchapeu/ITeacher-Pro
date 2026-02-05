@@ -197,56 +197,56 @@ export const AnalyticsDashboard = () => {
         </div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           <Card className="border-slate-200" data-testid="overall-rate-card">
-            <CardHeader>
-              <CardTitle className="text-slate-900 flex items-center gap-3 text-base">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Taxa de Presença Geral
+            <CardHeader className="p-3 sm:p-4 lg:p-6">
+              <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-xs sm:text-sm lg:text-base">
+                <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5 text-primary flex-shrink-0" />
+                <span className="truncate">Taxa Geral</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold text-primary">
+            <CardContent className="p-3 pt-0 sm:p-4 sm:pt-0 lg:p-6 lg:pt-0">
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">
                 {overviewData?.overall_attendance_rate || 0}%
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900 flex items-center gap-3 text-base">
-                <Users className="h-5 w-5 text-primary" />
-                Total de Turmas
+            <CardHeader className="p-3 sm:p-4 lg:p-6">
+              <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-xs sm:text-sm lg:text-base">
+                <Users className="h-4 w-4 lg:h-5 lg:w-5 text-primary flex-shrink-0" />
+                <span className="truncate">Turmas</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold text-primary">{classes.length}</p>
+            <CardContent className="p-3 pt-0 sm:p-4 sm:pt-0 lg:p-6 lg:pt-0">
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">{classes.length}</p>
             </CardContent>
           </Card>
 
           <Card className="border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900 flex items-center gap-3 text-base">
-                <Calendar className="h-5 w-5 text-primary" />
-                Registros Totais
+            <CardHeader className="p-3 sm:p-4 lg:p-6">
+              <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-xs sm:text-sm lg:text-base">
+                <Calendar className="h-4 w-4 lg:h-5 lg:w-5 text-primary flex-shrink-0" />
+                <span className="truncate">Registros</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold text-primary">
+            <CardContent className="p-3 pt-0 sm:p-4 sm:pt-0 lg:p-6 lg:pt-0">
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">
                 {overviewData?.total_records || 0}
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900 flex items-center gap-3 text-base">
-                <BookOpen className="h-5 w-5 text-primary" />
-                Período
+            <CardHeader className="p-3 sm:p-4 lg:p-6">
+              <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-xs sm:text-sm lg:text-base">
+                <BookOpen className="h-4 w-4 lg:h-5 lg:w-5 text-primary flex-shrink-0" />
+                <span className="truncate">Período</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-lg font-medium text-slate-600">Últimos 30 dias</p>
+            <CardContent className="p-3 pt-0 sm:p-4 sm:pt-0 lg:p-6 lg:pt-0">
+              <p className="text-sm lg:text-lg font-medium text-slate-600">30 dias</p>
             </CardContent>
           </Card>
         </div>
