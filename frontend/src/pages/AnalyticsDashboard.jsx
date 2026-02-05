@@ -176,11 +176,11 @@ export const AnalyticsDashboard = () => {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
@@ -190,8 +190,8 @@ export const AnalyticsDashboard = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-heading font-bold text-slate-900">Analytics</h1>
-              <p className="text-slate-600">Visualize estatísticas de presença e desempenho</p>
+              <h1 className="text-2xl sm:text-3xl font-heading font-bold text-slate-900">Analytics</h1>
+              <p className="text-sm sm:text-base text-slate-600">Estatísticas de presença</p>
             </div>
           </div>
         </div>
