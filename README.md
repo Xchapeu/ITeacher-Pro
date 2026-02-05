@@ -22,6 +22,7 @@ ITeacher é uma plataforma completa para instituições de ensino gerenciarem tu
 - **Axios** para requisições HTTP
 - **Recharts** para gráficos e analytics
 - **date-fns** para manipulação de datas
+- **Design Responsivo** - Desktop, Tablet e Mobile
 
 ## 📋 Requisitos
 
