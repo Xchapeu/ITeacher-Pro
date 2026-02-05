@@ -54,24 +54,24 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-white flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-3 mb-8">
-          <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-            <BookOpen className="h-7 w-7 text-white" strokeWidth={2.5} />
+        <Link to="/" className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <div className="h-10 w-10 sm:h-12 sm:w-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+            <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-3xl font-heading font-bold text-slate-900">ITeacher</span>
+          <span className="text-2xl sm:text-3xl font-heading font-bold text-slate-900">ITeacher</span>
         </Link>
 
-        <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-8 space-y-6">
+        <div className="bg-white border border-slate-100 shadow-sm rounded-2xl p-5 sm:p-8 space-y-5 sm:space-y-6">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-heading font-bold text-slate-900">Bem-vindo de volta</h1>
-            <p className="text-slate-600">Entre com sua conta</p>
+            <h1 className="text-2xl sm:text-3xl font-heading font-bold text-slate-900">Bem-vindo de volta</h1>
+            <p className="text-sm sm:text-base text-slate-600">Entre com sua conta</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700 font-medium">Email</Label>
+              <Label htmlFor="email" className="text-slate-700 font-medium text-sm sm:text-base">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <Input
