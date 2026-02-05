@@ -14,20 +14,24 @@ Construir um website para instituições de ensino que permite gerenciar planos 
 
 ## Stack Tecnológico
 - **Backend:** Node.js + Express.js + Mongoose + MongoDB
-- **Frontend:** React 19 + Vite + Tailwind CSS + Shadcn/UI
+- **Frontend:** React 19 + Vite + Tailwind CSS + Shadcn/UI + Recharts
 - **Autenticação:** JWT + Emergent Google OAuth
+- **Email:** Resend
+- **PDF/CSV:** PDFKit + json2csv
 
 ---
 
 ## O que foi implementado
 
-### Funcionalidades Completas
+### Funcionalidades Completas ✅
+
 | Feature | Status | Data |
 |---------|--------|------|
 | Landing Page | ✅ Completo | Jan 2026 |
 | Registro de usuários (Institution/Teacher) | ✅ Completo | Jan 2026 |
 | Login JWT (email/senha) | ✅ Completo | Jan 2026 |
 | Login Google OAuth | ✅ Completo | Jan 2026 |
+| **Seleção de tipo usuário (Google OAuth)** | ✅ Completo | Fev 2026 |
 | Dashboard Instituição | ✅ Completo | Jan 2026 |
 | Dashboard Professor | ✅ Completo | Jan 2026 |
 | CRUD de Turmas | ✅ Completo | Jan 2026 |
@@ -39,13 +43,38 @@ Construir um website para instituições de ensino que permite gerenciar planos 
 | Upload de Materiais | ✅ Completo | Jan 2026 |
 | Sistema de Mensagens | ✅ Completo | Jan 2026 |
 | Migração para Node.js/Vite | ✅ Completo | Fev 2026 |
+| **Dashboard de Analytics** | ✅ Completo | Fev 2026 |
+| **Notificações por Email (Resend)** | ✅ Completo | Fev 2026 |
+| **Notificações Automáticas (Cron)** | ✅ Completo | Fev 2026 |
+| **Exportar Relatórios PDF** | ✅ Completo | Fev 2026 |
+| **Exportar Relatórios CSV/Excel** | ✅ Completo | Fev 2026 |
 | README.md documentação | ✅ Completo | Fev 2026 |
 
-### Migrações Realizadas (Fev 2026)
-- Backend: Python/FastAPI → Node.js/Express
-- Frontend: Create React App → Vite
-- Variáveis de ambiente: process.env.REACT_APP_* → import.meta.env.VITE_*
-- Remoção de badges "Made with Emergent"
+### Novas Funcionalidades Adicionadas (Fev 2026)
+
+#### 1. Dashboard de Analytics
+- Taxa de presença geral e por turma
+- Gráfico de tendência (últimos 30 dias)
+- Estatísticas detalhadas por aluno
+- Gráficos interativos (Recharts)
+- Filtros por período
+
+#### 2. Sistema de Notificações por Email
+- Lembretes manuais para professores
+- Envio em massa para todos os professores
+- **Notificações automáticas** 24h antes das aulas (cron job às 18h)
+- Templates de email profissionais
+- Integração com Resend API
+
+#### 3. Exportação de Relatórios
+- **PDF:** Relatório completo com resumo e detalhes por aluno
+- **CSV/Excel:** Dados estruturados com BOM UTF-8 para Excel
+- Filtros por período
+
+#### 4. Seleção de Tipo de Usuário (Google OAuth)
+- Novos usuários via Google são redirecionados para escolher tipo
+- Opções: Professor ou Instituição de Ensino
+- Interface amigável com ícones
 
 ---
 
@@ -55,7 +84,7 @@ Construir um website para instituições de ensino que permite gerenciar planos 
 /app/
 ├── backend/
 │   ├── models.js       # Mongoose schemas
-│   ├── server.js       # Express server + all routes
+│   ├── server.js       # Express server + cron jobs + all routes
 │   ├── package.json
 │   └── .env
 ├── frontend/
@@ -70,7 +99,10 @@ Construir um website para instituições de ensino que permite gerenciar planos 
 │   │   │   ├── InstitutionDashboard.jsx
 │   │   │   ├── TeacherDashboard.jsx
 │   │   │   ├── ClassDetails.jsx
-│   │   │   └── AuthCallback.jsx
+│   │   │   ├── AuthCallback.jsx
+│   │   │   ├── SelectUserType.jsx      # NEW
+│   │   │   ├── AnalyticsDashboard.jsx  # NEW
+│   │   │   └── NotificationsPage.jsx   # NEW
 │   │   ├── App.jsx
 │   │   └── index.jsx
 │   ├── vite.config.js
@@ -89,72 +121,50 @@ Construir um website para instituições de ensino que permite gerenciar planos 
   email: String,
   password_hash: String,
   name: String,
-  user_type: 'institution' | 'teacher',
+  user_type: 'institution' | 'teacher' | null, // null para OAuth sem tipo definido
   google_id: String,
   picture: String
 }
 ```
 
-### Class
-```javascript
-{
-  class_id: String,
-  name: String,
-  description: String,
-  institution_id: String
-}
-```
+### Class, Subject, Schedule, Student, Attendance, Material, Message
+(Ver documentação completa no README.md)
 
-### Subject
-```javascript
-{
-  subject_id: String,
-  name: String,
-  description: String,
-  institution_id: String
-}
-```
+---
 
-### Schedule
-```javascript
-{
-  schedule_id: String,
-  class_id: String,
-  teacher_id: String,
-  subject_id: String,
-  day_of_week: String,
-  time: String,
-  duration: Number,
-  recurrence_type: String,
-  start_date: String,
-  end_date: String
-}
+## APIs Principais
+
+### Novos Endpoints (Fev 2026)
+
+```
+PUT  /api/auth/user-type              - Atualizar tipo de usuário
+GET  /api/analytics/overview          - Visão geral de presença
+GET  /api/analytics/attendance/:id    - Analytics por turma
+GET  /api/export/attendance/:id/pdf   - Exportar PDF
+GET  /api/export/attendance/:id/csv   - Exportar CSV
+POST /api/notifications/send-reminder - Enviar lembrete
+POST /api/notifications/send-bulk     - Envio em massa
 ```
 
 ---
 
-## Issues Conhecidas
+## Integrações de Terceiros
 
-### P2 - Seleção de tipo de usuário no Google OAuth
-- **Status:** Pendente
-- **Descrição:** Usuários que fazem login via Google são automaticamente definidos como "teacher"
-- **Solução:** Implementar tela/modal para escolher tipo de usuário após primeiro login Google
+| Serviço | Propósito | Status |
+|---------|-----------|--------|
+| Emergent Google Auth | Login social | ✅ Funcionando |
+| Resend | Envio de emails | ✅ Funcionando (modo teste) |
+
+**Nota:** Resend em modo teste só envia para emails verificados.
 
 ---
 
-## Tarefas Futuras (Backlog)
+## Testes
 
-### P1 - Próximas
-- [ ] Implementar seleção de tipo de usuário no Google OAuth
+### Backend: 100% (30/30 testes)
+### Frontend: 100% (todos os testes UI passaram)
 
-### P2 - Melhorias
-- [ ] Dashboard com analytics e gráficos de frequência
-- [ ] Notificações automáticas antes das aulas
-
-### P3 - Nice to have
-- [ ] Exportar relatórios de presença em PDF/Excel
-- [ ] Integração com calendário Google
-- [ ] App mobile (React Native)
+Arquivos de teste: `/app/backend/tests/test_iteacher_api.py`
 
 ---
 
@@ -170,7 +180,16 @@ Construir um website para instituições de ensino que permite gerenciar planos 
 
 ---
 
-## URLs e Endpoints
+## Tarefas Futuras/Backlog
+
+### P3 - Nice to have
+- [ ] Integração com calendário Google
+- [ ] App mobile (React Native)
+- [ ] Dashboard de analytics mais avançado com IA
+
+---
+
+## URLs
 
 - **Frontend:** https://schoolmate-108.preview.emergentagent.com
 - **API Base:** https://schoolmate-108.preview.emergentagent.com/api
