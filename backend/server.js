@@ -9,6 +9,10 @@ const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
 const { body, validationResult } = require('express-validator');
+const { Resend } = require('resend');
+const cron = require('node-cron');
+const PDFDocument = require('pdfkit');
+const { Parser } = require('json2csv');
 
 const models = require('./models');
 const { User, UserSession, Subject, Class, TeacherAssignment, Student, Schedule, Material, Attendance, Message } = models;
