@@ -97,111 +97,150 @@ export const InstitutionDashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="grid grid-cols-12 min-h-screen">
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+              <BookOpen className="h-5 w-5 text-white" strokeWidth={2.5} />
+            </div>
+            <span className="text-lg font-heading font-bold text-slate-900">ITeacher</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            data-testid="mobile-menu-btn"
+          >
+            {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+        </div>
+      </header>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <div className="flex min-h-screen">
         {/* Sidebar */}
-        <aside className="col-span-2 bg-white border-r border-slate-200 p-6 space-y-8">
-          <div className="flex items-center gap-3">
+        <aside className={`
+          fixed lg:static inset-y-0 left-0 z-50
+          w-64 lg:w-56 xl:w-64
+          bg-white border-r border-slate-200 
+          transform transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          p-4 lg:p-6 space-y-6 lg:space-y-8
+          pt-20 lg:pt-6
+          overflow-y-auto
+          flex-shrink-0
+        `}>
+          {/* Logo - Hidden on mobile */}
+          <div className="hidden lg:flex items-center gap-3">
             <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <BookOpen className="h-6 w-6 text-white" strokeWidth={2.5} />
             </div>
             <span className="text-xl font-heading font-bold text-slate-900">ITeacher</span>
           </div>
 
-          <nav className="space-y-2">
-            <Link to="/institution" data-testid="nav-overview">
+          <nav className="space-y-1 lg:space-y-2">
+            <Link to="/institution" data-testid="nav-overview" onClick={() => setSidebarOpen(false)}>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-start gap-3 text-sm lg:text-base ${
                   location.pathname === '/institution'
                     ? 'bg-sky-50 text-primary'
                     : 'text-slate-600 hover:text-primary hover:bg-sky-50'
                 }`}
               >
-                <BookOpen className="h-5 w-5" />
-                Visão Geral
+                <BookOpen className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Visão Geral</span>
               </Button>
             </Link>
-            <Link to="/institution/classes" data-testid="nav-classes">
+            <Link to="/institution/classes" data-testid="nav-classes" onClick={() => setSidebarOpen(false)}>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-start gap-3 text-sm lg:text-base ${
                   location.pathname === '/institution/classes'
                     ? 'bg-sky-50 text-primary'
                     : 'text-slate-600 hover:text-primary hover:bg-sky-50'
                 }`}
               >
-                <GraduationCap className="h-5 w-5" />
-                Turmas
+                <GraduationCap className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Turmas</span>
               </Button>
             </Link>
-            <Link to="/institution/subjects" data-testid="nav-subjects">
+            <Link to="/institution/subjects" data-testid="nav-subjects" onClick={() => setSidebarOpen(false)}>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-start gap-3 text-sm lg:text-base ${
                   location.pathname === '/institution/subjects'
                     ? 'bg-sky-50 text-primary'
                     : 'text-slate-600 hover:text-primary hover:bg-sky-50'
                 }`}
               >
-                <BookOpen className="h-5 w-5" />
-                Matérias
+                <BookOpen className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Matérias</span>
               </Button>
             </Link>
-            <Link to="/institution/teachers" data-testid="nav-teachers">
+            <Link to="/institution/teachers" data-testid="nav-teachers" onClick={() => setSidebarOpen(false)}>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-start gap-3 text-sm lg:text-base ${
                   location.pathname === '/institution/teachers'
                     ? 'bg-sky-50 text-primary'
                     : 'text-slate-600 hover:text-primary hover:bg-sky-50'
                 }`}
               >
-                <Users className="h-5 w-5" />
-                Professores
+                <Users className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Professores</span>
               </Button>
             </Link>
-            <Link to="/institution/messages" data-testid="nav-messages">
+            <Link to="/institution/messages" data-testid="nav-messages" onClick={() => setSidebarOpen(false)}>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-start gap-3 text-sm lg:text-base ${
                   location.pathname === '/institution/messages'
                     ? 'bg-sky-50 text-primary'
                     : 'text-slate-600 hover:text-primary hover:bg-sky-50'
                 }`}
               >
-                <MessageSquare className="h-5 w-5" />
-                Mensagens
+                <MessageSquare className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Mensagens</span>
               </Button>
             </Link>
-            <Link to="/analytics" data-testid="nav-analytics">
+            <Link to="/analytics" data-testid="nav-analytics" onClick={() => setSidebarOpen(false)}>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-start gap-3 text-sm lg:text-base ${
                   location.pathname === '/analytics'
                     ? 'bg-sky-50 text-primary'
                     : 'text-slate-600 hover:text-primary hover:bg-sky-50'
                 }`}
               >
-                <BarChart3 className="h-5 w-5" />
-                Analytics
+                <BarChart3 className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Analytics</span>
               </Button>
             </Link>
-            <Link to="/notifications" data-testid="nav-notifications">
+            <Link to="/notifications" data-testid="nav-notifications" onClick={() => setSidebarOpen(false)}>
               <Button
                 variant="ghost"
-                className={`w-full justify-start gap-3 ${
+                className={`w-full justify-start gap-3 text-sm lg:text-base ${
                   location.pathname === '/notifications'
                     ? 'bg-sky-50 text-primary'
                     : 'text-slate-600 hover:text-primary hover:bg-sky-50'
                 }`}
               >
-                <Bell className="h-5 w-5" />
-                Notificações
+                <Bell className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Notificações</span>
               </Button>
             </Link>
           </nav>
 
-          <div className="pt-8 border-t border-slate-200">
+          <div className="pt-6 lg:pt-8 border-t border-slate-200">
             <Button
               onClick={handleLogout}
               variant="ghost"
@@ -215,14 +254,16 @@ export const InstitutionDashboard = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="col-span-10 p-8">
-          <Routes>
-            <Route path="/" element={<Overview classes={classes} teachers={teachers} subjects={subjects} user={user} />} />
-            <Route path="/classes" element={<ClassesView classes={classes} fetchData={fetchData} />} />
-            <Route path="/subjects" element={<SubjectsView subjects={subjects} fetchData={fetchData} />} />
-            <Route path="/teachers" element={<TeachersView teachers={teachers} classes={classes} subjects={subjects} fetchData={fetchData} />} />
-            <Route path="/messages" element={<MessagesView messages={messages} teachers={teachers} fetchData={fetchData} />} />
-          </Routes>
+        <main className="flex-1 pt-16 lg:pt-0 min-h-screen">
+          <div className="p-4 sm:p-6 lg:p-8">
+            <Routes>
+              <Route path="/" element={<Overview classes={classes} teachers={teachers} subjects={subjects} user={user} />} />
+              <Route path="/classes" element={<ClassesView classes={classes} fetchData={fetchData} />} />
+              <Route path="/subjects" element={<SubjectsView subjects={subjects} fetchData={fetchData} />} />
+              <Route path="/teachers" element={<TeachersView teachers={teachers} classes={classes} subjects={subjects} fetchData={fetchData} />} />
+              <Route path="/messages" element={<MessagesView messages={messages} teachers={teachers} fetchData={fetchData} />} />
+            </Routes>
+          </div>
         </main>
       </div>
     </div>
