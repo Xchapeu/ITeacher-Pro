@@ -63,6 +63,10 @@ const upload = multer({ storage });
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRATION = '7d';
 
+// Resend Config
+const resend = new Resend(process.env.RESEND_API_KEY);
+const SENDER_EMAIL = process.env.SENDER_EMAIL || 'onboarding@resend.dev';
+
 // Helper functions
 const generateId = (prefix) => `${prefix}_${Math.random().toString(36).substr(2, 12)}`;
 
