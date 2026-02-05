@@ -11,7 +11,9 @@ import {
   Plus,
   Edit,
   Trash2,
-  Send
+  Send,
+  BarChart3,
+  Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
