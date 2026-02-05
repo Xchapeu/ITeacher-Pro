@@ -405,19 +405,19 @@ const ClassesView = ({ classes, fetchData }) => {
 
   return (
     <div className="space-y-6" data-testid="classes-view">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-heading font-bold text-slate-900">Turmas</h1>
-          <p className="text-slate-600">Gerencie as turmas da instituição</p>
+          <h1 className="text-2xl lg:text-3xl font-heading font-bold text-slate-900">Turmas</h1>
+          <p className="text-sm lg:text-base text-slate-600">Gerencie as turmas da instituição</p>
         </div>
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-6 py-6 font-semibold gap-2" data-testid="create-class-btn">
+            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-4 sm:px-6 py-5 sm:py-6 font-semibold gap-2 w-full sm:w-auto" data-testid="create-class-btn">
               <Plus className="h-5 w-5" />
               Nova Turma
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Criar Nova Turma</DialogTitle>
             </DialogHeader>
@@ -451,7 +451,7 @@ const ClassesView = ({ classes, fetchData }) => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {classes.map((cls) => (
           <Card key={cls.class_id} className="border-slate-200 hover:border-primary/20 transition-colors" data-testid={`class-card-${cls.class_id}`}>
             <CardHeader>
