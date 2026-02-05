@@ -232,7 +232,7 @@ const MyClasses = ({ classes, user }) => {
         <p className="text-slate-600 mt-2">Suas turmas e matérias atribuídas</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {classes.map((cls) => (
           <Card key={cls.class_id} className="border-slate-200 hover:border-primary/20 transition-all hover:shadow-md" data-testid={`class-card-${cls.class_id}`}>
             <CardHeader>
@@ -488,7 +488,7 @@ const Materials = ({ classes, fetchData }) => {
         </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
         {materials.map((material) => (
           <Card key={material.material_id} className="border-slate-200" data-testid={`material-${material.material_id}`}>
             <CardHeader>

@@ -578,7 +578,7 @@ const SubjectsView = ({ subjects, fetchData }) => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {subjects.map((subject) => (
           <Card key={subject.subject_id} className="border-slate-200 hover:border-primary/20 transition-colors" data-testid={`subject-card-${subject.subject_id}`}>
             <CardHeader>
@@ -731,7 +731,7 @@ const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
         {teachers.map((teacher) => (
           <Card key={teacher.user_id} className="border-slate-200" data-testid={`teacher-card-${teacher.user_id}`}>
             <CardHeader>
