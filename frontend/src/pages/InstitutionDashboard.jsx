@@ -532,19 +532,19 @@ const SubjectsView = ({ subjects, fetchData }) => {
 
   return (
     <div className="space-y-6" data-testid="subjects-view">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-heading font-bold text-slate-900">Matérias</h1>
-          <p className="text-slate-600">Gerencie as matérias da instituição</p>
+          <h1 className="text-2xl lg:text-3xl font-heading font-bold text-slate-900">Matérias</h1>
+          <p className="text-sm lg:text-base text-slate-600">Gerencie as matérias da instituição</p>
         </div>
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-6 py-6 font-semibold gap-2" data-testid="create-subject-btn">
+            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-4 sm:px-6 py-5 sm:py-6 font-semibold gap-2 w-full sm:w-auto" data-testid="create-subject-btn">
               <Plus className="h-5 w-5" />
               Nova Matéria
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Criar Nova Matéria</DialogTitle>
             </DialogHeader>
