@@ -33,11 +33,19 @@ export const AuthCallback = () => {
           }
         );
 
-        const { user, session_token } = response.data;
+        const { user, session_token, needs_user_type } = response.data;
 
         document.cookie = `session_token=${session_token}; path=/; secure; samesite=none; max-age=${7 * 24 * 60 * 60}`;
+        localStorage.setItem('token', session_token);
+        localStorage.setItem('user', JSON.stringify(user));
 
         toast.success(`Bem-vindo, ${user.name}!`);
+
+        // If new user via Google OAuth, redirect to select user type
+        if (needs_user_type || !user.user_type) {
+          navigate('/select-user-type', { replace: true });
+          return;
+        }
 
         if (user.user_type === 'institution') {
           navigate('/institution', { replace: true, state: { user } });
