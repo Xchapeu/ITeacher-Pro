@@ -224,12 +224,12 @@ export const TeacherDashboard = () => {
 
 const MyClasses = ({ classes, user }) => {
   return (
-    <div className="space-y-8" data-testid="teacher-classes">
+    <div className="space-y-6 lg:space-y-8" data-testid="teacher-classes">
       <div>
-        <h1 className="text-4xl font-heading font-bold text-slate-900">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold text-slate-900">
           Olá, {user?.name}
         </h1>
-        <p className="text-slate-600 mt-2">Suas turmas e matérias atribuídas</p>
+        <p className="text-sm sm:text-base text-slate-600 mt-2">Suas turmas e matérias atribuídas</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
@@ -367,19 +367,19 @@ const Materials = ({ classes, fetchData }) => {
 
   return (
     <div className="space-y-6" data-testid="materials-view">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-heading font-bold text-slate-900">Materiais de Aula</h1>
-          <p className="text-slate-600">Gerencie materiais das suas turmas</p>
+          <h1 className="text-2xl lg:text-3xl font-heading font-bold text-slate-900">Materiais de Aula</h1>
+          <p className="text-sm lg:text-base text-slate-600">Gerencie materiais das suas turmas</p>
         </div>
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-6 py-6 font-semibold gap-2" data-testid="create-material-btn">
+            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-4 sm:px-6 py-5 sm:py-6 font-semibold gap-2 w-full sm:w-auto" data-testid="create-material-btn">
               <Plus className="h-5 w-5" />
               Novo Material
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Criar Material de Aula</DialogTitle>
             </DialogHeader>
