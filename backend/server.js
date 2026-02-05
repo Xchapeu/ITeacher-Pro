@@ -258,17 +258,20 @@ app.post('/api/auth/session', async (req, res) => {
     const oauthData = response.data;
 
     let user = await User.findOne({ email: oauthData.email });
+    let isNewUser = false;
 
     if (!user) {
+      // New user - create without user_type (will be set later)
       const user_id = generateId('user');
       user = new User({
         user_id,
         email: oauthData.email,
         name: oauthData.name,
-        user_type: 'teacher',
+        user_type: null, // Will be selected by user
         picture: oauthData.picture || null
       });
       await user.save();
+      isNewUser = true;
     } else {
       user.name = oauthData.name;
       user.picture = oauthData.picture || user.picture;
@@ -290,7 +293,7 @@ app.post('/api/auth/session', async (req, res) => {
     delete userResponse._id;
     delete userResponse.__v;
 
-    res.json({ user: userResponse, session_token });
+    res.json({ user: userResponse, session_token, needs_user_type: isNewUser || !user.user_type });
   } catch (error) {
     console.error('Session error:', error);
     res.status(400).json({ detail: 'Invalid session' });
