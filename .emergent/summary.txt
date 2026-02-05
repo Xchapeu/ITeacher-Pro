@@ -1,0 +1,155 @@
+<analysis>**original_problem_statement:**
+The user wants to build a website for educational institutions. The platform should allow institutions to manage lesson plans, classes, and student lists. It should provide teachers with a dedicated page for their assigned classes, including class materials, a calendar with class schedules, and an attendance list for each class.
+
+PRODUCT REQUIREMENTS:
+- A registration form with a user type field: Instituição de ensino (Educational Institution) or Professor (Teacher).
+- User authentication via both JWT (email/password) and Google OAuth.
+- Institutions can create and manage classes, students, subjects, and assign teachers to classes/subjects.
+- Teachers can view their assigned classes, upload class materials, and view the class schedule.
+- Teachers and Institutions can take attendance for a class.
+- A scheduling system where an institution can create recurring class schedules (weekly, monthly, semesterly, annually) for a specific teacher, subject, and class.
+- The application name should be ITeacher.
+- No Made with Emergent badges should be visible.
+- The technology stack should be a Node.js backend with a Vite-based React frontend.
+
+**User's preferred language**: Portuguese (pt-br). The next agent MUST respond in Portuguese.
+
+**what currently exists?**
+A full-stack application has been built and recently migrated from a Python/FastAPI backend and Create-React-App frontend to a **Node.js/Express backend** and a **Vite/React frontend**, as requested by the user.
+
+-   **Backend:** A Node.js server using Express.js and Mongoose for MongoDB interaction. It handles all business logic, including user authentication (JWT & Google OAuth), and CRUD operations for institutions, teachers, classes, subjects, materials, attendance, and a complex recurring schedule system.
+-   **Frontend:** A React application built with Vite. It includes pages for landing, login, registration, and dashboards for both institutions and teachers. It features components for managing classes, students, subjects, and viewing schedules on a calendar.
+-   **Functionality:** Core features are implemented, but require verification after the major technology stack migration.
+
+**Last working item**:
+-   **Last item agent was working:** The agent was in the process of fixing a CORS/network error in the newly migrated Vite frontend. A screenshot attempt failed, and the agent deduced that Vite's development server configuration needed to be adjusted for the containerized environment. The planned fix was to add  configuration to .
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** First, use the screenshot tool to verify the frontend loads correctly after the fix. Then, a full regression test by the **frontend testing agent** is highly recommended to validate all functionality after the major tech stack migration.
+-   **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+-   Issue 1: Vite frontend is not loading correctly due to a CORS/network configuration issue. (P0 - HIGHEST)
+-   Issue 2: Google OAuth login flow is likely broken or unverified after the migration. (P1)
+-   Issue 3: New users signing up via Google OAuth default to the teacher role without being given a choice. (P2)
+
+Issues Detail:
+-   **Issue 1: Vite frontend not loading**
+    -   **Attempted fixes:** The agent correctly identified that the issue is not in the application code but in the Vite development server configuration within the container. The session ended just before applying the fix.
+    -   **Next debug checklist**:
+        1.  Edit .
+        2.  Add a  configuration block to allow external access. A common configuration for this environment is:
+            
+        3.  Restart the frontend service using frontend: ERROR (not running)
+frontend: ERROR (abnormal termination).
+        4.  Take a screenshot of the login page to confirm it loads correctly.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a critical blocker. Fixing it will make the frontend accessible and allow for further testing of the entire application after the migration.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+
+-   **Issue 2: Google OAuth Login Flow**
+    -   **Attempted fixes:** This was reported by the user before the migration. The agent's investigation was inconclusive. The  also noted issues with the callback. The entire flow must be re-validated on the new Node.js stack.
+    -   **Next debug checklist**:
+        1.  Review the Google OAuth logic in  (specifically the  endpoint).
+        2.  Review the frontend implementation in  and .
+        3.  Use the  to perform a full Google OAuth login flow test.
+    -   **Why fix this issue and what will be achieved with the fix?** It is a core feature requested by the user.
+    -   **Status:** NOT STARTED (on the new stack)
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on other issue:** Issue 1
+
+-   **Issue 3: Google OAuth User Type Default**
+    -   **Attempted fixes:** This was identified by the agent in the old Python backend but not fixed before the migration. The logic was likely copied to the new Node.js backend.
+    -   **Next debug checklist**:
+        1.  In , locate the  endpoint.
+        2.  Find the logic where a new user is created.
+        3.  Instead of hardcoding , the logic should redirect the user to a page or show a modal where they can select their role (teacher or institution) to complete their profile.
+    -   **Why fix this issue and what will be achieved with the fix?** Allows institutions to sign up using Google, which is currently not possible.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on other issue:** Issue 1
+
+**In progress Task List**:
+-   **Task 1: Complete and Verify Tech Stack Migration**
+    -   **Where to resume:** Resume by fixing the Vite server configuration as outlined in Issue 1. After the frontend is accessible, perform a full regression test of all features.
+    -   **What will be achieved with this?** A stable, fully functional application on the user's desired Node.js + Vite technology stack.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on something:** Blocked on itself (resolving Issue 1).
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks:**
+    -   (P1) Implement role selection for new users signing up via Google OAuth.
+-   **Future Tasks:**
+    -   Implement a dashboard with analytics and charts for attendance tracking.
+    -   Implement automated notifications for teachers before their scheduled classes.
+
+**Completed work in this session**
+-   **Major Tech Stack Migration:**
+    -   Backend migrated from Python/FastAPI to Node.js/Express.
+    -   Frontend migrated from Create React App to Vite.
+-   **Feature Implementation (on old stack, then migrated):**
+    -   Initial application structure with user roles (Institution, Teacher).
+    -   CRUD functionality for Classes, Students, and Materials.
+    -   Subjects (Matérias) feature, linking teachers to specific subjects within a class.
+    -   Advanced scheduling system with recurrence options (weekly, monthly, semester, etc.).
+-   **Bug Fixes & Refinements:**
+    -   Corrected attendance marking logic.
+    -   Students are now sorted alphabetically in lists.
+    -   Adjusted date logic for recurring schedules.
+    -   Removed the Made with Emergent badge by migrating to Vite and modifying .
+    -   Fixed a server error caused by legacy data after adding the  field.
+    -   Fixed a UI bug where modals would block the screen after submission.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Backend:** Node.js, Express.js, Mongoose, MongoDB, JWT
+-   **Frontend:** React, Vite, Tailwind CSS, date-fns, axios
+-   **Architecture:** REST API, Single Page Application (SPA)
+
+**key DB schema**
+-   **users**: 
+-   **classes**: 
+-   **subjects**: 
+-   **schedules**: 
+
+**All files of reference**
+-   : The new, primary backend file containing all API logic.
+-   : The Vite configuration file that needs to be edited to fix the current blocking issue.
+-   : The new Vite-based HTML entry point, where the Emergent script was removed.
+-   : Entry point for user login, needs to be verified post-migration.
+-   : Handles the redirect from Google OAuth.
+-   : Contains the complex frontend logic for scheduling.
+
+**Critical Info for New Agent**
+The entire application was just migrated from **Python/FastAPI/CRA to Node.js/Express/Vite**. This was a massive undertaking. The immediate priority is to fix the Vite server configuration to make the frontend accessible. Once that is done, the entire application requires **extensive regression testing**, as regressions are highly likely. Pay special attention to the JWT and Google OAuth login flows.
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User**: Migrate backend to NodeJS, frontend to Vite, and remove all Made with Emergent badges. (Status: IN PROGRESS)
+2.  **User**: Adjustments: Sort students alphabetically, remove Emergent badge, change recurrence logic. (Status: DONE, badge removal completed by Vite migration)
+3.  **User**: Create an advanced scheduling system with recurrence and teacher/subject selection. (Status: DONE)
+4.  **User**: Rename app to ITeacher, fix 520 error, fix Google login, and test the whole app. (Status: PARTIALLY DONE - Renamed & 520 error fixed; login/testing is pending post-migration verification)
+5.  **User**: Add a Subjects feature. (Status: DONE)
+6.  **User**: Attendance and Google login are broken. (Status: PARTIALLY DONE - Attendance logic fixed, Google login remains an issue)
+7.  **User**: Confirmation of initial requirements. (Status: DONE)
+8.  **User**: Initial problem statement. (Status: IN PROGRESS)
+
+**Project Health Check:**
+-   **Broken**: The entire frontend is currently inaccessible due to a Vite server configuration issue. The Google OAuth flow is also presumed to be broken.
+-   **Mocked**: None.
+
+**3rd Party Integrations**
+-   Emergent-managed Google Auth — uses Emergent LLM Key.
+
+**Testing status**
+-   **Test files created:**  (This is now obsolete as it was for the old Python backend).
+-   **Known regressions:** The JWT and Google OAuth login flows are highly suspected to have regressions after the massive tech stack migration. The entire application's functionality is unverified on the new stack.
+
+**What agent forgot to execute**
+-   The agent was about to apply the fix for the Vite server configuration in  but the session ended. This is the absolute next step.
+-   A comprehensive regression test plan was not formulated after the migration, which is a critical next step after the Vite server is fixed.</analysis>

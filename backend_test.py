@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class EduFlowAPITester:
-    def __init__(self, base_url="https://classforge-1.preview.emergentagent.com"):
+    def __init__(self, base_url="https://schoolmate-108.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_data = None
