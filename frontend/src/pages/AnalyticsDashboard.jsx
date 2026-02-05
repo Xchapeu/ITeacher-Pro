@@ -320,13 +320,13 @@ export const AnalyticsDashboard = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Filters */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <Label>Turma</Label>
+                <Label className="text-sm">Turma</Label>
                 <select
                   value={selectedClass}
                   onChange={(e) => setSelectedClass(e.target.value)}
-                  className="w-full h-10 bg-slate-50 border border-slate-200 rounded-lg px-4"
+                  className="w-full h-10 bg-slate-50 border border-slate-200 rounded-lg px-3 text-sm"
                   data-testid="select-class-analytics"
                 >
                   {classes.map((cls) => (
@@ -337,20 +337,22 @@ export const AnalyticsDashboard = () => {
                 </select>
               </div>
               <div>
-                <Label>Data Início</Label>
+                <Label className="text-sm">Data Início</Label>
                 <Input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
+                  className="text-sm"
                   data-testid="start-date-input"
                 />
               </div>
               <div>
-                <Label>Data Fim</Label>
+                <Label className="text-sm">Data Fim</Label>
                 <Input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
+                  className="text-sm"
                   data-testid="end-date-input"
                 />
               </div>
