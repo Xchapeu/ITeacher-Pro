@@ -652,19 +652,19 @@ const TeachersView = ({ teachers, classes, subjects, fetchData }) => {
 
   return (
     <div className="space-y-6" data-testid="teachers-view">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-heading font-bold text-slate-900">Professores</h1>
-          <p className="text-slate-600">Gerencie professores e atribuições</p>
+          <h1 className="text-2xl lg:text-3xl font-heading font-bold text-slate-900">Professores</h1>
+          <p className="text-sm lg:text-base text-slate-600">Gerencie professores e atribuições</p>
         </div>
         <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-6 py-6 font-semibold gap-2" data-testid="assign-teacher-btn">
+            <Button className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-full px-4 sm:px-6 py-5 sm:py-6 font-semibold gap-2 w-full sm:w-auto" data-testid="assign-teacher-btn">
               <Plus className="h-5 w-5" />
               Atribuir à Turma
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Atribuir Professor à Turma</DialogTitle>
             </DialogHeader>
