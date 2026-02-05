@@ -8,10 +8,16 @@ import InstitutionDashboard from '@/pages/InstitutionDashboard.jsx';
 import TeacherDashboard from '@/pages/TeacherDashboard.jsx';
 import ClassDetails from '@/pages/ClassDetails.jsx';
 import AuthCallback from '@/pages/AuthCallback.jsx';
+import SelectUserType from '@/pages/SelectUserType.jsx';
+import AnalyticsDashboard from '@/pages/AnalyticsDashboard.jsx';
+import NotificationsPage from '@/pages/NotificationsPage.jsx';
 import ProtectedRoute from '@/components/ProtectedRoute.jsx';
 
 const DashboardRedirect = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!user?.user_type) {
+    return <Navigate to="/select-user-type" replace />;
+  }
   if (user?.user_type === 'institution') {
     return <Navigate to="/institution" replace />;
   }
@@ -30,6 +36,14 @@ function AppRouter() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/select-user-type"
+        element={
+          <ProtectedRoute>
+            <SelectUserType />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/dashboard"
         element={
@@ -59,6 +73,22 @@ function AppRouter() {
         element={
           <ProtectedRoute>
             <ClassDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <AnalyticsDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute requiredType="institution">
+            <NotificationsPage />
           </ProtectedRoute>
         }
       />
