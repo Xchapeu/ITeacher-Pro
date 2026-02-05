@@ -9,6 +9,10 @@ ITeacher é uma plataforma completa para instituições de ensino gerenciarem tu
 - **MongoDB** com Mongoose
 - **JWT** para autenticação
 - **bcryptjs** para criptografia de senhas
+- **Resend** para envio de emails
+- **node-cron** para tarefas agendadas
+- **PDFKit** para geração de PDFs
+- **json2csv** para exportação CSV
 
 ### Frontend
 - **React 19** com Vite
@@ -16,6 +20,8 @@ ITeacher é uma plataforma completa para instituições de ensino gerenciarem tu
 - **Shadcn/UI** para componentes
 - **React Router** para navegação
 - **Axios** para requisições HTTP
+- **Recharts** para gráficos e analytics
+- **date-fns** para manipulação de datas
 
 ## 📋 Requisitos
 
@@ -34,6 +40,8 @@ MONGO_URL=mongodb://localhost:27017
 DB_NAME=iteacher_db
 JWT_SECRET=sua_chave_secreta_aqui
 CORS_ORIGINS=*
+RESEND_API_KEY=re_xxxxx
+SENDER_EMAIL=onboarding@resend.dev
 ```
 
 ### Frontend (.env)
@@ -72,19 +80,29 @@ O frontend iniciará na porta `3000`.
 /app/
 ├── backend/
 │   ├── models.js       # Modelos Mongoose
-│   ├── server.js       # Servidor Express
+│   ├── server.js       # Servidor Express + Cron jobs
 │   ├── package.json
 │   └── .env
 ├── frontend/
 │   ├── src/
 │   │   ├── components/ # Componentes React
 │   │   ├── pages/      # Páginas da aplicação
-│   │   ├── App.jsx     # Componente principal
-│   │   └── index.jsx   # Entry point
-│   ├── vite.config.js  # Configuração Vite
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── RegisterPage.jsx
+│   │   │   ├── InstitutionDashboard.jsx
+│   │   │   ├── TeacherDashboard.jsx
+│   │   │   ├── ClassDetails.jsx
+│   │   │   ├── AnalyticsDashboard.jsx  # Dashboard de estatísticas
+│   │   │   ├── NotificationsPage.jsx    # Notificações por email
+│   │   │   ├── SelectUserType.jsx       # Seleção de tipo (Google OAuth)
+│   │   │   └── AuthCallback.jsx
+│   │   ├── App.jsx
+│   │   └── index.jsx
+│   ├── vite.config.js
 │   ├── package.json
 │   └── .env
-└── uploads/            # Arquivos enviados
+└── uploads/
 ```
 
 ## 🔐 Autenticação
@@ -93,6 +111,7 @@ A aplicação suporta dois métodos de autenticação:
 
 1. **JWT (Email/Senha)**: Login tradicional com email e senha
 2. **Google OAuth**: Login social via Google (Emergent Auth)
+   - Novos usuários são redirecionados para selecionar o tipo de conta
 
 ## 👤 Tipos de Usuário
 
@@ -103,6 +122,9 @@ A aplicação suporta dois métodos de autenticação:
 - Cadastrar alunos
 - Criar horários de aula com recorrência
 - Enviar mensagens para professores
+- **Dashboard de Analytics** com gráficos de frequência
+- **Enviar notificações por email** para professores
+- **Exportar relatórios** de presença em PDF e CSV
 
 ### Professor
 - Visualizar turmas atribuídas
@@ -111,16 +133,41 @@ A aplicação suporta dois métodos de autenticação:
 - Marcar presença dos alunos
 - Visualizar calendário de aulas
 - Receber mensagens da instituição
+- **Visualizar Analytics** das suas turmas
+- Receber **notificações automáticas** 24h antes das aulas
+
+## 📊 Analytics e Relatórios
+
+### Dashboard de Analytics
+- Taxa de presença geral e por turma
+- Gráfico de tendência dos últimos 30 dias
+- Estatísticas por aluno
+- Gráfico de presença/ausência/atraso
+
+### Exportação de Relatórios
+- **PDF**: Relatório completo com resumo e detalhes por aluno
+- **CSV/Excel**: Dados estruturados para análise externa
+
+## 📧 Sistema de Notificações
+
+### Notificações Manuais
+- Enviar lembretes para professores sobre aulas específicas
+- Envio em massa para todos os professores
+
+### Notificações Automáticas
+- O sistema envia automaticamente lembretes por email 24 horas antes de cada aula agendada
+- Executado diariamente às 18:00
 
 ## 📚 API Endpoints
 
 ### Autenticação
 ```
-POST /api/auth/register  - Criar conta
-POST /api/auth/login     - Login
-POST /api/auth/session   - Google OAuth callback
-GET  /api/auth/me        - Dados do usuário logado
-POST /api/auth/logout    - Logout
+POST /api/auth/register   - Criar conta
+POST /api/auth/login      - Login
+POST /api/auth/session    - Google OAuth callback
+GET  /api/auth/me         - Dados do usuário logado
+PUT  /api/auth/user-type  - Atualizar tipo de usuário
+POST /api/auth/logout     - Logout
 ```
 
 ### Turmas
@@ -179,6 +226,25 @@ POST /api/messages          - Enviar mensagem
 PUT  /api/messages/:id/read - Marcar como lida
 ```
 
+### Analytics
+```
+GET /api/analytics/overview           - Visão geral de presença
+GET /api/analytics/attendance/:classId - Analytics por turma
+```
+
+### Exportação
+```
+GET /api/export/attendance/:classId/pdf - Exportar PDF
+GET /api/export/attendance/:classId/csv - Exportar CSV
+```
+
+### Notificações
+```
+POST /api/notifications/send-reminder - Enviar lembrete individual
+POST /api/notifications/send-bulk     - Envio em massa
+GET  /api/notifications/settings      - Configurações
+```
+
 ## 🗓️ Sistema de Recorrência
 
 O sistema de horários suporta várias opções de recorrência:
@@ -218,6 +284,17 @@ yarn dev     # Inicia em modo desenvolvimento
 yarn build   # Gera build de produção
 yarn preview # Visualiza build de produção
 ```
+
+## 🔔 Configuração do Resend (Email)
+
+1. Crie uma conta em https://resend.com
+2. Obtenha sua API Key
+3. Configure no arquivo `.env` do backend:
+   ```
+   RESEND_API_KEY=re_xxxxx
+   SENDER_EMAIL=onboarding@resend.dev
+   ```
+4. **Nota:** No modo de teste, emails só são enviados para endereços verificados
 
 ## 📝 Licença
 
