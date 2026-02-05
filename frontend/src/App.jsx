@@ -1,14 +1,22 @@
 import '@/App.css';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
-import LandingPage from '@/pages/LandingPage';
-import RegisterPage from '@/pages/RegisterPage';
-import LoginPage from '@/pages/LoginPage';
-import InstitutionDashboard from '@/pages/InstitutionDashboard';
-import TeacherDashboard from '@/pages/TeacherDashboard';
-import ClassDetails from '@/pages/ClassDetails';
-import AuthCallback from '@/pages/AuthCallback';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import LandingPage from '@/pages/LandingPage.jsx';
+import RegisterPage from '@/pages/RegisterPage.jsx';
+import LoginPage from '@/pages/LoginPage.jsx';
+import InstitutionDashboard from '@/pages/InstitutionDashboard.jsx';
+import TeacherDashboard from '@/pages/TeacherDashboard.jsx';
+import ClassDetails from '@/pages/ClassDetails.jsx';
+import AuthCallback from '@/pages/AuthCallback.jsx';
+import ProtectedRoute from '@/components/ProtectedRoute.jsx';
+
+const DashboardRedirect = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user?.user_type === 'institution') {
+    return <Navigate to="/institution" replace />;
+  }
+  return <Navigate to="/teacher" replace />;
+};
 
 function AppRouter() {
   const location = useLocation();
@@ -57,13 +65,6 @@ function AppRouter() {
     </Routes>
   );
 }
-
-const DashboardRedirect = ({ user }) => {
-  if (user?.user_type === 'institution') {
-    return <Navigate to="/institution" replace />;
-  }
-  return <Navigate to="/teacher" replace />;
-};
 
 function App() {
   return (
