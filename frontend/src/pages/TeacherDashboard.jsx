@@ -137,6 +137,19 @@ export const TeacherDashboard = () => {
                 Mensagens
               </Button>
             </Link>
+            <Link to="/analytics" data-testid="nav-analytics">
+              <Button
+                variant="ghost"
+                className={`w-full justify-start gap-3 ${
+                  location.pathname === '/analytics'
+                    ? 'bg-sky-50 text-primary'
+                    : 'text-slate-600 hover:text-primary hover:bg-sky-50'
+                }`}
+              >
+                <BarChart3 className="h-5 w-5" />
+                Analytics
+              </Button>
+            </Link>
           </nav>
 
           <div className="pt-8 border-t border-slate-200">
