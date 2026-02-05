@@ -77,6 +77,12 @@ Construir um website para instituições de ensino que permite gerenciar planos 
 - Opções: Professor ou Instituição de Ensino
 - Interface amigável com ícones
 
+#### 5. Design Responsivo (Fev 2026)
+- **Mobile (375px):** Menu hamburger, sidebar colapsável, grids de 1-2 colunas
+- **Tablet (768px):** Menu hamburger, sidebar com overlay
+- **Desktop (1920px):** Sidebar persistente, grids de 2-4 colunas
+- Tipografia e espaçamentos responsivos em todas as páginas
+
 ---
 
 ## Arquitetura de Código
