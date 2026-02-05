@@ -221,10 +221,6 @@ export const TeacherDashboard = () => {
     </div>
   );
 };
-      </div>
-    </div>
-  );
-};
 
 const MyClasses = ({ classes, user }) => {
   return (
