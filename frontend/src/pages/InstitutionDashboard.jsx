@@ -272,80 +272,80 @@ export const InstitutionDashboard = () => {
 
 const Overview = ({ classes, teachers, subjects, user }) => {
   return (
-    <div className="space-y-8" data-testid="institution-overview">
+    <div className="space-y-6 lg:space-y-8" data-testid="institution-overview">
       <div>
-        <h1 className="text-4xl font-heading font-bold text-slate-900">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-bold text-slate-900">
           Bem-vindo, {user?.name}
         </h1>
-        <p className="text-slate-600 mt-2">Visão geral da sua instituição</p>
+        <p className="text-sm sm:text-base text-slate-600 mt-2">Visão geral da sua instituição</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-slate-900 flex items-center gap-3">
-              <GraduationCap className="h-6 w-6 text-primary" />
-              Total de Turmas
+          <CardHeader className="p-4 lg:p-6">
+            <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-sm lg:text-base">
+              <GraduationCap className="h-5 w-5 lg:h-6 lg:w-6 text-primary flex-shrink-0" />
+              <span className="truncate">Turmas</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-primary">{classes.length}</p>
+          <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
+            <p className="text-2xl lg:text-4xl font-bold text-primary">{classes.length}</p>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-slate-900 flex items-center gap-3">
-              <BookOpen className="h-6 w-6 text-primary" />
-              Matérias
+          <CardHeader className="p-4 lg:p-6">
+            <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-sm lg:text-base">
+              <BookOpen className="h-5 w-5 lg:h-6 lg:w-6 text-primary flex-shrink-0" />
+              <span className="truncate">Matérias</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-primary">{subjects.length}</p>
+          <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
+            <p className="text-2xl lg:text-4xl font-bold text-primary">{subjects.length}</p>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-slate-900 flex items-center gap-3">
-              <Users className="h-6 w-6 text-primary" />
-              Professores
+          <CardHeader className="p-4 lg:p-6">
+            <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-sm lg:text-base">
+              <Users className="h-5 w-5 lg:h-6 lg:w-6 text-primary flex-shrink-0" />
+              <span className="truncate">Professores</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-primary">{teachers.length}</p>
+          <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
+            <p className="text-2xl lg:text-4xl font-bold text-primary">{teachers.length}</p>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-slate-900 flex items-center gap-3">
-              <BookOpen className="h-6 w-6 text-primary" />
-              Sistema Ativo
+          <CardHeader className="p-4 lg:p-6">
+            <CardTitle className="text-slate-900 flex items-center gap-2 lg:gap-3 text-sm lg:text-base">
+              <BookOpen className="h-5 w-5 lg:h-6 lg:w-6 text-primary flex-shrink-0" />
+              <span className="truncate">Status</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-lg font-medium text-slate-600">Operacional</p>
+          <CardContent className="p-4 pt-0 lg:p-6 lg:pt-0">
+            <p className="text-sm lg:text-lg font-medium text-green-600">Ativo</p>
           </CardContent>
         </Card>
       </div>
 
       <Card className="border-slate-200">
         <CardHeader>
-          <CardTitle className="text-slate-900">Turmas Recentes</CardTitle>
-          <CardDescription>Últimas turmas criadas</CardDescription>
+          <CardTitle className="text-slate-900 text-lg lg:text-xl">Turmas Recentes</CardTitle>
+          <CardDescription className="text-sm">Últimas turmas criadas</CardDescription>
         </CardHeader>
         <CardContent>
           {classes.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3 lg:space-y-4">
               {classes.slice(0, 5).map((cls) => (
-                <div key={cls.class_id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-primary/20 transition-colors">
-                  <div>
-                    <h3 className="font-semibold text-slate-900">{cls.name}</h3>
-                    <p className="text-sm text-slate-600">{cls.description || 'Sem descrição'}</p>
+                <div key={cls.class_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 lg:p-4 border border-slate-200 rounded-lg hover:border-primary/20 transition-colors">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-slate-900 truncate">{cls.name}</h3>
+                    <p className="text-sm text-slate-600 truncate">{cls.description || 'Sem descrição'}</p>
                   </div>
-                  <Link to={`/class/${cls.class_id}`}>
-                    <Button variant="ghost" size="sm" className="text-primary hover:bg-sky-50">
+                  <Link to={`/class/${cls.class_id}`} className="flex-shrink-0">
+                    <Button variant="ghost" size="sm" className="text-primary hover:bg-sky-50 w-full sm:w-auto">
                       Ver Detalhes
                     </Button>
                   </Link>
