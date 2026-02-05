@@ -902,6 +902,486 @@ app.put('/api/messages/:message_id/read', authenticate, async (req, res) => {
   }
 });
 
+// Update user type (for Google OAuth users)
+app.put('/api/auth/user-type', authenticate, async (req, res) => {
+  try {
+    const { user_type } = req.body;
+    
+    if (!['institution', 'teacher'].includes(user_type)) {
+      return res.status(400).json({ detail: 'Invalid user type' });
+    }
+
+    await User.updateOne(
+      { user_id: req.user.user_id },
+      { $set: { user_type } }
+    );
+
+    const updatedUser = await User.findOne({ user_id: req.user.user_id }).select('-password_hash -_id -__v');
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Update user type error:', error);
+    res.status(500).json({ detail: 'Failed to update user type' });
+  }
+});
+
+// Analytics routes
+app.get('/api/analytics/attendance/:class_id', authenticate, async (req, res) => {
+  try {
+    const { class_id } = req.params;
+    const { start_date, end_date } = req.query;
+
+    const query = { class_id };
+    if (start_date && end_date) {
+      query.date = { $gte: start_date, $lte: end_date };
+    }
+
+    const attendanceRecords = await Attendance.find(query);
+    const students = await Student.find({ class_id });
+
+    // Calculate attendance stats
+    const totalRecords = attendanceRecords.length;
+    const presentCount = attendanceRecords.filter(r => r.status === 'present').length;
+    const absentCount = attendanceRecords.filter(r => r.status === 'absent').length;
+    const lateCount = attendanceRecords.filter(r => r.status === 'late').length;
+
+    // Group by date for chart
+    const byDate = {};
+    attendanceRecords.forEach(record => {
+      if (!byDate[record.date]) {
+        byDate[record.date] = { date: record.date, present: 0, absent: 0, late: 0, total: 0 };
+      }
+      byDate[record.date][record.status]++;
+      byDate[record.date].total++;
+    });
+
+    // Group by student
+    const byStudent = {};
+    students.forEach(student => {
+      byStudent[student.student_id] = {
+        student_id: student.student_id,
+        name: student.name,
+        present: 0,
+        absent: 0,
+        late: 0,
+        total: 0,
+        attendance_rate: 0
+      };
+    });
+
+    attendanceRecords.forEach(record => {
+      if (byStudent[record.student_id]) {
+        byStudent[record.student_id][record.status]++;
+        byStudent[record.student_id].total++;
+      }
+    });
+
+    // Calculate attendance rate for each student
+    Object.values(byStudent).forEach(student => {
+      if (student.total > 0) {
+        student.attendance_rate = Math.round((student.present / student.total) * 100);
+      }
+    });
+
+    res.json({
+      summary: {
+        total_records: totalRecords,
+        present: presentCount,
+        absent: absentCount,
+        late: lateCount,
+        attendance_rate: totalRecords > 0 ? Math.round((presentCount / totalRecords) * 100) : 0
+      },
+      by_date: Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date)),
+      by_student: Object.values(byStudent).sort((a, b) => a.name.localeCompare(b.name))
+    });
+  } catch (error) {
+    console.error('Analytics error:', error);
+    res.status(500).json({ detail: 'Failed to fetch analytics' });
+  }
+});
+
+app.get('/api/analytics/overview', authenticate, async (req, res) => {
+  try {
+    let query = {};
+    
+    if (req.user.user_type === 'institution') {
+      const classes = await Class.find({ institution_id: req.user.user_id });
+      const classIds = classes.map(c => c.class_id);
+      query.class_id = { $in: classIds };
+    } else {
+      const assignments = await TeacherAssignment.find({ teacher_id: req.user.user_id });
+      const classIds = [...new Set(assignments.map(a => a.class_id))];
+      query.class_id = { $in: classIds };
+    }
+
+    // Get all attendance records
+    const attendanceRecords = await Attendance.find(query);
+    
+    // Last 30 days trend
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+
+    const recentRecords = attendanceRecords.filter(r => r.date >= thirtyDaysAgoStr);
+    
+    // Group by date for trend
+    const trend = {};
+    recentRecords.forEach(record => {
+      if (!trend[record.date]) {
+        trend[record.date] = { date: record.date, present: 0, absent: 0, late: 0, total: 0 };
+      }
+      trend[record.date][record.status]++;
+      trend[record.date].total++;
+    });
+
+    // Calculate attendance rate per day
+    const trendData = Object.values(trend).map(day => ({
+      ...day,
+      rate: day.total > 0 ? Math.round((day.present / day.total) * 100) : 0
+    })).sort((a, b) => a.date.localeCompare(b.date));
+
+    // Overall stats
+    const totalRecords = attendanceRecords.length;
+    const presentCount = attendanceRecords.filter(r => r.status === 'present').length;
+
+    res.json({
+      overall_attendance_rate: totalRecords > 0 ? Math.round((presentCount / totalRecords) * 100) : 0,
+      total_records: totalRecords,
+      trend: trendData
+    });
+  } catch (error) {
+    console.error('Overview analytics error:', error);
+    res.status(500).json({ detail: 'Failed to fetch overview analytics' });
+  }
+});
+
+// Export routes
+app.get('/api/export/attendance/:class_id/pdf', authenticate, async (req, res) => {
+  try {
+    const { class_id } = req.params;
+    const { start_date, end_date } = req.query;
+
+    const cls = await Class.findOne({ class_id });
+    if (!cls) {
+      return res.status(404).json({ detail: 'Class not found' });
+    }
+
+    const query = { class_id };
+    if (start_date && end_date) {
+      query.date = { $gte: start_date, $lte: end_date };
+    }
+
+    const students = await Student.find({ class_id }).sort({ name: 1 });
+    const attendanceRecords = await Attendance.find(query);
+
+    // Create PDF
+    const doc = new PDFDocument({ margin: 50 });
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=relatorio_presenca_${class_id}.pdf`);
+    
+    doc.pipe(res);
+
+    // Title
+    doc.fontSize(20).text('Relatório de Presença', { align: 'center' });
+    doc.fontSize(14).text(`Turma: ${cls.name}`, { align: 'center' });
+    if (start_date && end_date) {
+      doc.fontSize(10).text(`Período: ${start_date} a ${end_date}`, { align: 'center' });
+    }
+    doc.moveDown(2);
+
+    // Summary
+    const presentCount = attendanceRecords.filter(r => r.status === 'present').length;
+    const absentCount = attendanceRecords.filter(r => r.status === 'absent').length;
+    const lateCount = attendanceRecords.filter(r => r.status === 'late').length;
+    const total = attendanceRecords.length;
+
+    doc.fontSize(12).text('Resumo:', { underline: true });
+    doc.fontSize(10);
+    doc.text(`Total de registros: ${total}`);
+    doc.text(`Presentes: ${presentCount} (${total > 0 ? Math.round((presentCount/total)*100) : 0}%)`);
+    doc.text(`Ausentes: ${absentCount} (${total > 0 ? Math.round((absentCount/total)*100) : 0}%)`);
+    doc.text(`Atrasados: ${lateCount} (${total > 0 ? Math.round((lateCount/total)*100) : 0}%)`);
+    doc.moveDown(2);
+
+    // Student details
+    doc.fontSize(12).text('Detalhes por Aluno:', { underline: true });
+    doc.moveDown();
+
+    students.forEach(student => {
+      const studentRecords = attendanceRecords.filter(r => r.student_id === student.student_id);
+      const studentPresent = studentRecords.filter(r => r.status === 'present').length;
+      const studentTotal = studentRecords.length;
+      const rate = studentTotal > 0 ? Math.round((studentPresent / studentTotal) * 100) : 0;
+
+      doc.fontSize(10);
+      doc.text(`${student.name} - Taxa de presença: ${rate}% (${studentPresent}/${studentTotal})`);
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error('Export PDF error:', error);
+    res.status(500).json({ detail: 'Failed to export PDF' });
+  }
+});
+
+app.get('/api/export/attendance/:class_id/csv', authenticate, async (req, res) => {
+  try {
+    const { class_id } = req.params;
+    const { start_date, end_date } = req.query;
+
+    const cls = await Class.findOne({ class_id });
+    if (!cls) {
+      return res.status(404).json({ detail: 'Class not found' });
+    }
+
+    const query = { class_id };
+    if (start_date && end_date) {
+      query.date = { $gte: start_date, $lte: end_date };
+    }
+
+    const students = await Student.find({ class_id }).sort({ name: 1 });
+    const attendanceRecords = await Attendance.find(query);
+
+    // Prepare data for CSV
+    const data = [];
+    students.forEach(student => {
+      const studentRecords = attendanceRecords.filter(r => r.student_id === student.student_id);
+      const presentCount = studentRecords.filter(r => r.status === 'present').length;
+      const absentCount = studentRecords.filter(r => r.status === 'absent').length;
+      const lateCount = studentRecords.filter(r => r.status === 'late').length;
+      const total = studentRecords.length;
+
+      data.push({
+        'Nome do Aluno': student.name,
+        'Email': student.email || '',
+        'Matrícula': student.enrollment_number || '',
+        'Presenças': presentCount,
+        'Ausências': absentCount,
+        'Atrasos': lateCount,
+        'Total de Aulas': total,
+        'Taxa de Presença (%)': total > 0 ? Math.round((presentCount / total) * 100) : 0
+      });
+    });
+
+    const parser = new Parser();
+    const csv = parser.parse(data);
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=relatorio_presenca_${class_id}.csv`);
+    res.send('\uFEFF' + csv); // BOM for Excel UTF-8
+  } catch (error) {
+    console.error('Export CSV error:', error);
+    res.status(500).json({ detail: 'Failed to export CSV' });
+  }
+});
+
+// Email notification routes
+app.post('/api/notifications/send-reminder', authenticate, async (req, res) => {
+  try {
+    const { schedule_id, custom_message } = req.body;
+
+    const schedule = await Schedule.findOne({ schedule_id });
+    if (!schedule) {
+      return res.status(404).json({ detail: 'Schedule not found' });
+    }
+
+    const teacher = await User.findOne({ user_id: schedule.teacher_id });
+    const cls = await Class.findOne({ class_id: schedule.class_id });
+    const subject = await Subject.findOne({ subject_id: schedule.subject_id });
+
+    if (!teacher || !teacher.email) {
+      return res.status(400).json({ detail: 'Teacher email not found' });
+    }
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #0EA5E9; padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">ITeacher</h1>
+        </div>
+        <div style="padding: 30px; background: #f8fafc;">
+          <h2 style="color: #1e293b;">Lembrete de Aula</h2>
+          <p style="color: #475569;">Olá ${teacher.name},</p>
+          <p style="color: #475569;">Este é um lembrete sobre sua próxima aula:</p>
+          <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Turma:</strong> ${cls?.name || 'N/A'}</p>
+            <p><strong>Matéria:</strong> ${subject?.name || 'N/A'}</p>
+            <p><strong>Dia:</strong> ${schedule.day_of_week}</p>
+            <p><strong>Horário:</strong> ${schedule.time}</p>
+            <p><strong>Duração:</strong> ${schedule.duration} minutos</p>
+          </div>
+          ${custom_message ? `<p style="color: #475569;"><strong>Mensagem:</strong> ${custom_message}</p>` : ''}
+          <p style="color: #94a3b8; font-size: 12px; margin-top: 30px;">
+            Este email foi enviado automaticamente pelo sistema ITeacher.
+          </p>
+        </div>
+      </div>
+    `;
+
+    const { data, error } = await resend.emails.send({
+      from: SENDER_EMAIL,
+      to: [teacher.email],
+      subject: `Lembrete de Aula - ${cls?.name || 'Turma'} - ${subject?.name || 'Matéria'}`,
+      html: htmlContent
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return res.status(500).json({ detail: 'Failed to send email', error: error.message });
+    }
+
+    res.json({ message: 'Reminder sent successfully', email_id: data?.id });
+  } catch (error) {
+    console.error('Send reminder error:', error);
+    res.status(500).json({ detail: 'Failed to send reminder' });
+  }
+});
+
+app.post('/api/notifications/send-bulk', authenticate, async (req, res) => {
+  try {
+    if (req.user.user_type !== 'institution') {
+      return res.status(403).json({ detail: 'Only institutions can send bulk notifications' });
+    }
+
+    const { subject: emailSubject, message, recipient_type } = req.body;
+
+    let recipients = [];
+    
+    if (recipient_type === 'teachers') {
+      // Get all teachers assigned to this institution's classes
+      const classes = await Class.find({ institution_id: req.user.user_id });
+      const classIds = classes.map(c => c.class_id);
+      const assignments = await TeacherAssignment.find({ class_id: { $in: classIds } });
+      const teacherIds = [...new Set(assignments.map(a => a.teacher_id))];
+      recipients = await User.find({ user_id: { $in: teacherIds } });
+    } else {
+      recipients = await User.find({ user_type: recipient_type });
+    }
+
+    const emails = recipients.filter(r => r.email).map(r => r.email);
+
+    if (emails.length === 0) {
+      return res.status(400).json({ detail: 'No recipients found' });
+    }
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #0EA5E9; padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">ITeacher</h1>
+        </div>
+        <div style="padding: 30px; background: #f8fafc;">
+          <h2 style="color: #1e293b;">${emailSubject}</h2>
+          <div style="color: #475569; white-space: pre-wrap;">${message}</div>
+          <p style="color: #94a3b8; font-size: 12px; margin-top: 30px;">
+            Enviado por ${req.user.name} via ITeacher.
+          </p>
+        </div>
+      </div>
+    `;
+
+    // Send to each recipient (Resend free tier limitation)
+    const results = [];
+    for (const email of emails) {
+      try {
+        const { data, error } = await resend.emails.send({
+          from: SENDER_EMAIL,
+          to: [email],
+          subject: emailSubject,
+          html: htmlContent
+        });
+        results.push({ email, success: !error, id: data?.id });
+      } catch (err) {
+        results.push({ email, success: false, error: err.message });
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    res.json({ 
+      message: `Sent ${successCount}/${emails.length} emails successfully`,
+      results 
+    });
+  } catch (error) {
+    console.error('Send bulk notification error:', error);
+    res.status(500).json({ detail: 'Failed to send bulk notifications' });
+  }
+});
+
+// Get notification settings
+app.get('/api/notifications/settings', authenticate, async (req, res) => {
+  try {
+    // For now, return default settings
+    res.json({
+      email_reminders: true,
+      reminder_hours_before: 24
+    });
+  } catch (error) {
+    res.status(500).json({ detail: 'Failed to get settings' });
+  }
+});
+
+// Cron job for automatic notifications (runs every hour)
+const sendAutomaticReminders = async () => {
+  try {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const dayOfWeek = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][tomorrow.getDay()];
+    
+    // Find schedules for tomorrow
+    const schedules = await Schedule.find({ day_of_week: dayOfWeek });
+    
+    for (const schedule of schedules) {
+      const teacher = await User.findOne({ user_id: schedule.teacher_id });
+      const cls = await Class.findOne({ class_id: schedule.class_id });
+      const subject = await Subject.findOne({ subject_id: schedule.subject_id });
+      
+      if (teacher && teacher.email) {
+        const htmlContent = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #0EA5E9; padding: 20px; text-align: center;">
+              <h1 style="color: white; margin: 0;">ITeacher</h1>
+            </div>
+            <div style="padding: 30px; background: #f8fafc;">
+              <h2 style="color: #1e293b;">Lembrete: Aula Amanhã</h2>
+              <p style="color: #475569;">Olá ${teacher.name},</p>
+              <p style="color: #475569;">Você tem uma aula agendada para amanhã:</p>
+              <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p><strong>Turma:</strong> ${cls?.name || 'N/A'}</p>
+                <p><strong>Matéria:</strong> ${subject?.name || 'N/A'}</p>
+                <p><strong>Horário:</strong> ${schedule.time}</p>
+                <p><strong>Duração:</strong> ${schedule.duration} minutos</p>
+              </div>
+              <p style="color: #94a3b8; font-size: 12px; margin-top: 30px;">
+                Este email foi enviado automaticamente pelo sistema ITeacher.
+              </p>
+            </div>
+          </div>
+        `;
+
+        try {
+          await resend.emails.send({
+            from: SENDER_EMAIL,
+            to: [teacher.email],
+            subject: `Lembrete: Aula amanhã - ${cls?.name || 'Turma'}`,
+            html: htmlContent
+          });
+          console.log(`Reminder sent to ${teacher.email}`);
+        } catch (emailError) {
+          console.error(`Failed to send reminder to ${teacher.email}:`, emailError);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Automatic reminder error:', error);
+  }
+};
+
+// Schedule cron job to run at 6 PM every day
+cron.schedule('0 18 * * *', () => {
+  console.log('Running automatic reminder job...');
+  sendAutomaticReminders();
+});
+
 // Serve uploaded files
 app.use('/uploads', express.static(uploadDir));
 
