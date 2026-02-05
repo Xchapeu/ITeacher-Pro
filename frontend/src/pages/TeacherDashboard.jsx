@@ -33,6 +33,7 @@ export const TeacherDashboard = () => {
   const [classes, setClasses] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
