@@ -48,6 +48,7 @@ Construir um website para instituições de ensino que permite gerenciar planos 
 | **Notificações Automáticas (Cron)** | ✅ Completo | Fev 2026 |
 | **Exportar Relatórios PDF** | ✅ Completo | Fev 2026 |
 | **Exportar Relatórios CSV/Excel** | ✅ Completo | Fev 2026 |
+| **Design Responsivo (Mobile/Tablet/Desktop)** | ✅ Completo | Fev 2026 |
 | README.md documentação | ✅ Completo | Fev 2026 |
 
 ### Novas Funcionalidades Adicionadas (Fev 2026)
