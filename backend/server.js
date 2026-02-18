@@ -63,8 +63,16 @@ const upload = multer({ storage });
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRATION = '7d';
 
-// Resend Config
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Resend Config (optional for development)
+let resend = null;
+
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+  console.log('✓ Resend configured');
+} else {
+  console.log('⚠ Resend not configured - emails disabled (development mode)');
+}
+
 const SENDER_EMAIL = process.env.SENDER_EMAIL || 'onboarding@resend.dev';
 
 // Helper functions
@@ -1227,6 +1235,12 @@ app.post('/api/notifications/send-reminder', authenticate, async (req, res) => {
       </div>
     `;
 
+    if (!resend) {
+      return res.status(200).json({
+        message: 'Email service disabled (development mode)',
+      });
+    }
+
     const { data, error } = await resend.emails.send({
       from: SENDER_EMAIL,
       to: [teacher.email],
@@ -1292,6 +1306,12 @@ app.post('/api/notifications/send-bulk', authenticate, async (req, res) => {
     const results = [];
     for (const email of emails) {
       try {
+        if (!resend) {
+          return res.status(200).json({
+            message: 'Email service disabled (development mode)',
+          });
+        }
+
         const { data, error } = await resend.emails.send({
           from: SENDER_EMAIL,
           to: [email],
@@ -1331,6 +1351,11 @@ app.get('/api/notifications/settings', authenticate, async (req, res) => {
 // Cron job for automatic notifications (runs every hour)
 const sendAutomaticReminders = async () => {
   try {
+    if (!resend) {
+      console.log('Automatic reminders skipped - email disabled');
+      return;
+    }
+
     const now = new Date();
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
